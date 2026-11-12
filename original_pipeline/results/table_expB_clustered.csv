@@ -1,0 +1,79 @@
+window,h,model,mae_model,mae_persist,delta_mae,ci_lo,ci_hi,p_boot,beats_persistence,significant
+main,1,Drift,0.3801,0.3171,0.063,0.038,0.0909,0.0001,False,True
+main,1,LightGBM (growth),0.307,0.3171,-0.0101,-0.0286,0.0091,0.2914,True,False
+main,1,LightGBM (level),0.3886,0.3171,0.0715,0.0049,0.1847,0.0192,False,True
+main,1,RF (growth),0.3068,0.3171,-0.0103,-0.0236,0.0022,0.1048,True,False
+main,1,RF (level),0.3246,0.3171,0.0075,-0.0169,0.034,0.5792,False,False
+main,1,Ridge (growth),0.3393,0.3171,0.0222,-0.0134,0.0729,0.311,False,False
+main,1,Ridge (level),0.3427,0.3171,0.0256,-0.0158,0.0839,0.3268,False,False
+main,1,SVR (growth),0.434,0.3171,0.1169,-0.0178,0.3596,0.3156,False,False
+main,1,SVR (level),0.4273,0.3171,0.1102,0.0254,0.2315,0.002,False,True
+main,1,XGBoost (growth),0.2987,0.3171,-0.0184,-0.0331,-0.0047,0.0042,True,True
+main,1,XGBoost (level),0.2958,0.3171,-0.0213,-0.044,-0.0005,0.0452,True,True
+main,1,kNN (growth),0.3088,0.3171,-0.0083,-0.0268,0.0086,0.341,True,False
+main,1,kNN (level),0.9865,0.3171,0.6694,0.4606,0.9256,0.0001,False,True
+main,3,Drift,0.6805,0.531,0.1495,0.0739,0.2311,0.0001,False,True
+main,3,LightGBM (growth),0.528,0.531,-0.0031,-0.0917,0.1117,0.8998,True,False
+main,3,LightGBM (level),0.5949,0.531,0.0639,-0.0432,0.2341,0.4798,False,False
+main,3,RF (growth),0.4806,0.531,-0.0504,-0.0996,-0.0051,0.0314,True,True
+main,3,RF (level),0.5331,0.531,0.0021,-0.0335,0.038,0.9036,False,False
+main,3,Ridge (growth),0.5416,0.531,0.0106,-0.0771,0.1361,0.9264,False,False
+main,3,Ridge (level),0.5495,0.531,0.0185,-0.0772,0.1522,0.8386,False,False
+main,3,SVR (growth),0.6699,0.531,0.1389,-0.0846,0.5234,0.5538,False,False
+main,3,SVR (level),0.5799,0.531,0.0489,-0.0556,0.1751,0.4236,False,False
+main,3,XGBoost (growth),0.4838,0.531,-0.0472,-0.1059,0.009,0.1038,True,False
+main,3,XGBoost (level),0.5062,0.531,-0.0248,-0.072,0.0255,0.3128,True,False
+main,3,kNN (growth),0.4892,0.531,-0.0418,-0.1061,0.0266,0.228,True,False
+main,3,kNN (level),1.0161,0.531,0.4851,0.3272,0.652,0.0001,False,True
+main,5,Drift,0.9331,0.7385,0.1947,0.0593,0.3474,0.0044,False,True
+main,5,LightGBM (growth),0.6209,0.7385,-0.1176,-0.2545,0.0382,0.1206,True,False
+main,5,LightGBM (level),0.7328,0.7385,-0.0056,-0.1168,0.1384,0.8726,True,False
+main,5,RF (growth),0.6211,0.7385,-0.1174,-0.2215,-0.0059,0.0392,True,True
+main,5,RF (level),0.6933,0.7385,-0.0451,-0.1103,0.0232,0.1868,True,False
+main,5,Ridge (growth),0.6785,0.7385,-0.06,-0.1867,0.0976,0.3884,True,False
+main,5,Ridge (level),0.6798,0.7385,-0.0587,-0.1886,0.1015,0.4082,True,False
+main,5,SVR (growth),0.7166,0.7385,-0.0218,-0.1605,0.1355,0.7382,True,False
+main,5,SVR (level),0.6662,0.7385,-0.0723,-0.1817,0.0297,0.1776,True,False
+main,5,XGBoost (growth),0.6158,0.7385,-0.1227,-0.2308,-0.0065,0.041,True,True
+main,5,XGBoost (level),0.5992,0.7385,-0.1393,-0.2124,-0.068,0.0001,True,True
+main,5,kNN (growth),0.6132,0.7385,-0.1253,-0.2254,-0.0253,0.0154,True,True
+main,5,kNN (level),1.0643,0.7385,0.3258,0.1902,0.4802,0.0001,False,True
+repl,1,Drift,0.2848,0.2471,0.0377,0.0145,0.0655,0.0012,False,True
+repl,1,LightGBM (growth),0.2691,0.2471,0.022,-0.0006,0.0438,0.0578,False,False
+repl,1,LightGBM (level),0.413,0.2471,0.1659,0.0484,0.3657,0.0001,False,True
+repl,1,RF (growth),0.2459,0.2471,-0.0012,-0.0112,0.0082,0.8206,True,False
+repl,1,RF (level),0.3205,0.2471,0.0734,0.0306,0.1251,0.0002,False,True
+repl,1,Ridge (growth),0.2392,0.2471,-0.0079,-0.0241,0.0062,0.3072,True,False
+repl,1,Ridge (level),0.2437,0.2471,-0.0034,-0.0242,0.0151,0.7618,True,False
+repl,1,SVR (growth),0.3807,0.2471,0.1336,0.0319,0.2944,0.0014,False,True
+repl,1,SVR (level),0.4069,0.2471,0.1598,0.0769,0.2639,0.0001,False,True
+repl,1,XGBoost (growth),0.2495,0.2471,0.0024,-0.0125,0.0161,0.7232,False,False
+repl,1,XGBoost (level),0.3021,0.2471,0.055,0.0253,0.0869,0.0004,False,True
+repl,1,kNN (growth),0.2638,0.2471,0.0167,0.0018,0.0328,0.029,False,True
+repl,1,kNN (level),1.0423,0.2471,0.7952,0.5877,1.0346,0.0001,False,True
+repl,3,Drift,0.6828,0.4681,0.2147,0.1236,0.3366,0.0001,False,True
+repl,3,LightGBM (growth),0.5157,0.4681,0.0477,-0.0068,0.1085,0.09,False,False
+repl,3,LightGBM (level),0.6223,0.4681,0.1542,0.0405,0.3102,0.0022,False,True
+repl,3,RF (growth),0.4532,0.4681,-0.0149,-0.0496,0.0223,0.4092,True,False
+repl,3,RF (level),0.5579,0.4681,0.0898,0.0213,0.1715,0.0056,False,True
+repl,3,Ridge (growth),0.4291,0.4681,-0.0389,-0.0943,0.0052,0.0942,True,False
+repl,3,Ridge (level),0.4302,0.4681,-0.0379,-0.0984,0.0107,0.157,True,False
+repl,3,SVR (growth),0.6834,0.4681,0.2153,0.0653,0.4132,0.0001,False,True
+repl,3,SVR (level),0.6422,0.4681,0.1741,0.0579,0.3125,0.0016,False,True
+repl,3,XGBoost (growth),0.4745,0.4681,0.0064,-0.0404,0.055,0.8132,False,False
+repl,3,XGBoost (level),0.4569,0.4681,-0.0111,-0.0968,0.0645,0.8142,True,False
+repl,3,kNN (growth),0.491,0.4681,0.0229,-0.0268,0.0775,0.3896,False,False
+repl,3,kNN (level),1.0571,0.4681,0.589,0.412,0.7899,0.0001,False,True
+repl,5,Drift,1.0429,0.6824,0.3605,0.2229,0.5133,0.0001,False,True
+repl,5,LightGBM (growth),0.6469,0.6824,-0.0355,-0.1565,0.0701,0.5398,True,False
+repl,5,LightGBM (level),0.7974,0.6824,0.1151,-0.0196,0.2613,0.0946,False,False
+repl,5,RF (growth),0.5673,0.6824,-0.1151,-0.2543,-0.0015,0.047,True,True
+repl,5,RF (level),0.7494,0.6824,0.067,-0.0459,0.1821,0.2414,False,False
+repl,5,Ridge (growth),0.5975,0.6824,-0.0849,-0.1968,0.0047,0.067,True,False
+repl,5,Ridge (level),0.5947,0.6824,-0.0876,-0.2095,0.0082,0.0818,True,False
+repl,5,SVR (growth),0.9172,0.6824,0.2348,-0.0076,0.5759,0.0594,False,False
+repl,5,SVR (level),0.7577,0.6824,0.0753,-0.0669,0.2315,0.3142,False,False
+repl,5,XGBoost (growth),0.5908,0.6824,-0.0916,-0.2409,0.0194,0.1382,True,False
+repl,5,XGBoost (level),0.6417,0.6824,-0.0407,-0.175,0.0884,0.5556,True,False
+repl,5,kNN (growth),0.6723,0.6824,-0.0101,-0.1322,0.1087,0.87,True,False
+repl,5,kNN (level),1.0713,0.6824,0.3889,0.2168,0.5713,0.0001,False,True

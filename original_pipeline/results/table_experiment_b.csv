@@ -1,0 +1,85 @@
+window,h,model,MAE,MAPE,MdAPE,MASE
+main_2021_2023,1,Persistence,0.317,6.429,4.478,1.198
+main_2021_2023,1,Drift,0.38,7.78,5.733,1.425
+main_2021_2023,1,Ridge (level),0.343,6.549,4.723,1.188
+main_2021_2023,1,kNN (level),0.987,20.612,14.506,3.528
+main_2021_2023,1,SVR (level),0.427,7.653,5.976,1.379
+main_2021_2023,1,RF (level),0.325,6.62,5.07,1.219
+main_2021_2023,1,XGBoost (level),0.296,6.593,4.723,1.188
+main_2021_2023,1,LightGBM (level),0.389,7.175,5.576,1.338
+main_2021_2023,1,Ridge (growth),0.339,6.572,4.775,1.193
+main_2021_2023,1,kNN (growth),0.309,6.365,4.557,1.173
+main_2021_2023,1,SVR (growth),0.434,6.888,4.928,1.232
+main_2021_2023,1,RF (growth),0.307,6.351,4.465,1.145
+main_2021_2023,1,XGBoost (growth),0.299,6.382,4.385,1.146
+main_2021_2023,1,LightGBM (growth),0.307,6.579,4.82,1.202
+main_2021_2023,3,Persistence,0.531,10.238,7.827,1.03
+main_2021_2023,3,Drift,0.68,13.837,10.185,1.363
+main_2021_2023,3,Ridge (level),0.55,9.681,7.009,0.921
+main_2021_2023,3,kNN (level),1.016,21.144,15.725,2.0
+main_2021_2023,3,SVR (level),0.58,12.063,7.855,1.125
+main_2021_2023,3,RF (level),0.533,10.928,7.732,1.069
+main_2021_2023,3,XGBoost (level),0.506,10.357,7.461,0.983
+main_2021_2023,3,LightGBM (level),0.595,11.058,8.771,1.095
+main_2021_2023,3,Ridge (growth),0.542,9.708,6.949,0.926
+main_2021_2023,3,kNN (growth),0.489,10.005,6.699,0.991
+main_2021_2023,3,SVR (growth),0.67,11.47,7.605,1.083
+main_2021_2023,3,RF (growth),0.481,9.861,6.646,0.95
+main_2021_2023,3,XGBoost (growth),0.484,10.206,7.319,0.981
+main_2021_2023,3,LightGBM (growth),0.528,10.43,7.654,1.014
+main_2021_2023,5,Persistence,0.738,14.349,11.774,1.101
+main_2021_2023,5,Drift,0.933,20.395,12.938,1.424
+main_2021_2023,5,Ridge (level),0.68,12.087,8.924,0.869
+main_2021_2023,5,kNN (level),1.064,22.601,16.094,1.588
+main_2021_2023,5,SVR (level),0.666,15.098,9.546,1.048
+main_2021_2023,5,RF (level),0.693,14.655,10.753,1.068
+main_2021_2023,5,XGBoost (level),0.599,13.147,9.722,0.963
+main_2021_2023,5,LightGBM (level),0.733,15.14,11.874,1.151
+main_2021_2023,5,Ridge (growth),0.678,12.052,8.722,0.867
+main_2021_2023,5,kNN (growth),0.613,13.258,9.573,0.975
+main_2021_2023,5,SVR (growth),0.717,14.33,10.14,1.021
+main_2021_2023,5,RF (growth),0.621,12.953,9.516,0.939
+main_2021_2023,5,XGBoost (growth),0.616,13.006,9.315,0.943
+main_2021_2023,5,LightGBM (growth),0.621,13.528,9.246,0.971
+replication_2015_2019,1,Persistence,0.247,5.437,3.512,0.995
+replication_2015_2019,1,Drift,0.285,6.272,3.637,1.154
+replication_2015_2019,1,Ridge (level),0.244,5.409,3.422,0.952
+replication_2015_2019,1,kNN (level),1.042,22.215,15.723,4.047
+replication_2015_2019,1,SVR (level),0.407,9.477,5.167,1.63
+replication_2015_2019,1,RF (level),0.321,6.418,4.164,1.23
+replication_2015_2019,1,XGBoost (level),0.302,6.867,4.248,1.213
+replication_2015_2019,1,LightGBM (level),0.413,7.516,4.72,1.328
+replication_2015_2019,1,Ridge (growth),0.239,5.301,3.297,0.945
+replication_2015_2019,1,kNN (growth),0.264,5.714,3.66,1.049
+replication_2015_2019,1,SVR (growth),0.381,7.26,4.491,1.317
+replication_2015_2019,1,RF (growth),0.246,5.443,3.448,0.976
+replication_2015_2019,1,XGBoost (growth),0.25,5.765,3.598,1.039
+replication_2015_2019,1,LightGBM (growth),0.269,6.229,3.833,1.141
+replication_2015_2019,3,Persistence,0.468,10.414,6.584,1.084
+replication_2015_2019,3,Drift,0.683,14.964,8.887,1.531
+replication_2015_2019,3,Ridge (level),0.43,10.299,6.459,0.989
+replication_2015_2019,3,kNN (level),1.057,22.38,15.656,2.273
+replication_2015_2019,3,SVR (level),0.642,15.338,8.176,1.442
+replication_2015_2019,3,RF (level),0.558,12.81,7.684,1.257
+replication_2015_2019,3,XGBoost (level),0.457,12.188,7.073,1.155
+replication_2015_2019,3,LightGBM (level),0.622,13.921,7.632,1.332
+replication_2015_2019,3,Ridge (growth),0.429,10.225,6.36,0.99
+replication_2015_2019,3,kNN (growth),0.491,11.01,6.558,1.12
+replication_2015_2019,3,SVR (growth),0.683,13.777,8.042,1.317
+replication_2015_2019,3,RF (growth),0.453,10.689,5.973,1.028
+replication_2015_2019,3,XGBoost (growth),0.474,11.535,5.967,1.105
+replication_2015_2019,3,LightGBM (growth),0.516,12.793,6.866,1.204
+replication_2015_2019,5,Persistence,0.682,15.088,9.795,1.241
+replication_2015_2019,5,Drift,1.043,24.919,14.479,1.92
+replication_2015_2019,5,Ridge (level),0.595,14.774,8.951,1.112
+replication_2015_2019,5,kNN (level),1.071,22.005,15.244,1.772
+replication_2015_2019,5,SVR (level),0.758,18.918,10.689,1.371
+replication_2015_2019,5,RF (level),0.749,16.455,10.407,1.25
+replication_2015_2019,5,XGBoost (level),0.642,14.921,8.611,1.114
+replication_2015_2019,5,LightGBM (level),0.797,17.25,10.411,1.331
+replication_2015_2019,5,Ridge (growth),0.598,14.738,9.045,1.108
+replication_2015_2019,5,kNN (growth),0.672,15.15,8.975,1.162
+replication_2015_2019,5,SVR (growth),0.917,18.311,10.112,1.325
+replication_2015_2019,5,RF (growth),0.567,15.039,7.534,1.088
+replication_2015_2019,5,XGBoost (growth),0.591,16.06,8.713,1.184
+replication_2015_2019,5,LightGBM (growth),0.647,17.117,9.382,1.238

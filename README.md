@@ -24,7 +24,8 @@ Per-capita fossil CO₂ emissions of a country can be estimated from widely avai
 | [`figures/`](figures) | Figures 1–8 as submitted (TIFF, 300 dpi); [`figures/png/`](figures/png) has PNG previews of all main and supporting figures |
 | [`supporting_information/`](supporting_information) | S1 Text (supplementary methods), S2 Text (temporal forecasting experiment), S1 Table (countries and data audit), S2 Table (sensitivity analyses and additional results), S1–S6 Fig |
 | [`data/`](data) | Harmonized panels used in the study and the two source files at the exact versions used |
-| [`analysis/`](analysis) | Scripts for the analyses added in the revision, their outputs, and a script for tests from stored out-of-fold estimates |
+| [`analysis/`](analysis) | Scripts for the analyses added in the revision, their outputs, and the tests of every model against ridge regression from the stored out-of-fold estimates |
+| [`original_pipeline/`](original_pipeline) | The complete original pipeline: code of every model including the deep networks and the Kaya-guided hybrids, the stored out-of-fold estimates of every model, and the trained hybrid networks of Experiment C |
 
 ## Data
 
@@ -55,7 +56,16 @@ python make_si_tables.py     # S1 Table and S2 Table
 
 [`analysis/README.md`](analysis/README.md) lists what each script produces and which table or figure it supports, and gives the values the scripts must reproduce. The folder `analysis/out/` holds the outputs of the run reported in the revised manuscript.
 
-The code of the neural networks (LSTM, GRU, CNN-LSTM, CNN-BiLSTM-Attn and the Kaya-guided hybrids) and their out-of-fold estimates belong to the original analysis pipeline and will be added to this repository before the archived release. With those estimates, `analysis/rev_tests_from_oof.py` computes the country-clustered tests of every model against ridge regression.
+The code of the deep networks and the Kaya-guided hybrids, and the out-of-fold estimates of all thirteen models, are in [`original_pipeline/`](original_pipeline); its [`REPRODUCE.md`](original_pipeline/REPRODUCE.md) gives the run order and [`README.md`](original_pipeline/README.md) lists two files missing from that archive and the path adjustments it needs. From the stored estimates:
+
+```bash
+cd analysis
+python oof_from_original.py                                     # out/oof_experiment_A.csv, out/oof_experiment_C.csv
+python rev_tests_from_oof.py out/oof_experiment_A.csv --reference Ridge
+python rev_tests_from_oof.py out/oof_experiment_C.csv --reference Ridge
+```
+
+This writes the country-clustered tests of every model against ridge regression and the accuracy of every model on subsets of countries to `analysis/out/`.
 
 ## Contact
 

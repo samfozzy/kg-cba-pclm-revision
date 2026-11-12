@@ -1,0 +1,23 @@
+{
+ "all 6 covariates": {
+  "RMSE": 3.056,
+  "MAE": 1.443,
+  "MAPE": 25.238,
+  "MdAPE": 16.284,
+  "R2": 0.8
+ },
+ "no fuel shares (E,G,P only)": {
+  "RMSE": 3.244,
+  "MAE": 1.567,
+  "MAPE": 26.654,
+  "MdAPE": 16.917,
+  "R2": 0.775
+ },
+ "energy per capita only": {
+  "RMSE": 3.595,
+  "MAE": 1.69,
+  "MAPE": 28.503,
+  "MdAPE": 17.905,
+  "R2": 0.723
+ }
+}

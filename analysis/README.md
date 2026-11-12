@@ -36,7 +36,8 @@ random state 42.
 | `rev08_extra.py` | ridge against random forest; per-country summaries | Results, S2 Table C |
 | `make_si_tables.py` | S1_Table.xlsx and S2_Table.xlsx from the outputs above | Supporting Information |
 | `fig_diagrams.py`, `fig_data.py`, `fig_results.py` | Figs 1-5, S2 Fig (and conversion of the retained original figures) | Figures |
-| `rev_tests_from_oof.py` | tests of every model against ridge, and re-scoring of every model, from stored out-of-fold estimates | Table 4 (to be completed) |
+| `oof_from_original.py` | stored out-of-fold estimates of all models as CSV | input to the next script |
+| `rev_tests_from_oof.py` | tests of every model against ridge, and re-scoring of every model, from stored out-of-fold estimates | Table 4 |
 
 The folder `out/` contains the outputs of the run reported in the revised manuscript, for comparison.
 
@@ -47,11 +48,15 @@ filled values for energy, GDP, coal share and gas share. `rev07_tests.py` (or an
 ridge) must reproduce RMSE 3.056, MAE 1.443, MAPE 25.2, MdAPE 16.3 and R2 0.800 for Experiment A, and
 RMSE 3.037, MdAPE 7.7 for ridge with seven covariates in Experiment C.
 
-## 5. Still to do with the stored predictions of the neural models
+## 5. Tests from the stored predictions of all models
 
-    python rev_tests_from_oof.py oof_experiment_A.csv --reference Ridge
+    python oof_from_original.py
+    python rev_tests_from_oof.py out/oof_experiment_A.csv --reference Ridge
+    python rev_tests_from_oof.py out/oof_experiment_C.csv --reference Ridge
 
-The input needs the columns `iso, year, observed` and one column of out-of-fold estimates per model
-(t CO2 per person; add `--log` if they are ln estimates). The script writes the cluster-bootstrap tests of
-every model against ridge (the rows for KG-CBA and PSO-KG-CBA belong in Table 4) and the accuracy of
-every model without the seven atypical economies and on the countries with and without long filled runs.
+`oof_from_original.py` converts the stored out-of-fold estimates in `../original_pipeline/results/` to
+`out/oof_experiment_A.csv` and `out/oof_experiment_C.csv` (columns `iso, year, observed` and one column per
+model, t CO2 per person). `rev_tests_from_oof.py` writes the cluster-bootstrap tests of every model against
+ridge (`out/oof_experiment_*_tests_vs_reference.csv`) and the accuracy of every model on all countries,
+without the seven atypical economies, without each model's own six worst-fitted countries, and on the
+countries with and without a filled run of more than three years (`out/oof_experiment_*_rescored.csv`).

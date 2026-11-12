@@ -1,0 +1,68 @@
+{
+ "Ridge": {
+  "top6": [
+   "SGP",
+   "ISL",
+   "QAT",
+   "NOR",
+   "KWT",
+   "LUX"
+  ],
+  "share6": 0.749
+ },
+ "GRU": {
+  "top6": [
+   "QAT",
+   "KWT",
+   "LUX",
+   "SAU",
+   "SGP",
+   "NOR"
+  ],
+  "share6": 0.778
+ },
+ "LightGBM": {
+  "top6": [
+   "QAT",
+   "NOR",
+   "KWT",
+   "SAU",
+   "SGP",
+   "LUX"
+  ],
+  "share6": 0.75
+ },
+ "PSO-KG-CBA": {
+  "top6": [
+   "ISL",
+   "QAT",
+   "KWT",
+   "SGP",
+   "SAU",
+   "NOR"
+  ],
+  "share6": 0.843
+ },
+ "KG-CBA": {
+  "top6": [
+   "QAT",
+   "KWT",
+   "ISL",
+   "SGP",
+   "LUX",
+   "SAU"
+  ],
+  "share6": 0.818
+ },
+ "Ensemble": {
+  "top6": [
+   "QAT",
+   "KWT",
+   "ISL",
+   "SGP",
+   "SAU",
+   "NOR"
+  ],
+  "share6": 0.793
+ }
+}

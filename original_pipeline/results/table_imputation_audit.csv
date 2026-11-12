@@ -1,0 +1,9 @@
+variable,imputed_country_years,pct
+co2_per_capita,0,0.0
+energy_per_capita,28,0.74
+gdp_per_capita,114,2.99
+population,0,0.0
+coal_share,244,6.41
+oil_share,0,0.0
+gas_share,291,7.64
+low_carbon_share_energy (76-country sub-panel),0,0.0
