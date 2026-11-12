@@ -56,7 +56,7 @@ python make_si_tables.py     # S1 Table and S2 Table
 
 [`analysis/README.md`](analysis/README.md) lists what each script produces and which table or figure it supports, and gives the values the scripts must reproduce. The folder `analysis/out/` holds the outputs of the run reported in the revised manuscript.
 
-The code of the deep networks and the Kaya-guided hybrids, and the out-of-fold estimates of all thirteen models, are in [`original_pipeline/`](original_pipeline); its [`REPRODUCE.md`](original_pipeline/REPRODUCE.md) gives the run order and [`README.md`](original_pipeline/README.md) lists two files missing from that archive and the path adjustments it needs. From the stored estimates:
+The code of the deep networks and the Kaya-guided hybrids, and the out-of-fold estimates of all thirteen models, are in [`original_pipeline/`](original_pipeline); its [`REPRODUCE.md`](original_pipeline/REPRODUCE.md) gives the run order and [`README.md`](original_pipeline/README.md) describes the reconstructed `conformal.py`, one file still missing from that archive and the path adjustments it needs. From the stored estimates:
 
 ```bash
 cd analysis

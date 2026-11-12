@@ -2,7 +2,8 @@
 
 This folder is the complete analysis pipeline of the study as archived in
 `samfozzy/kg-cba-loco-co2-reproducibility` (commit `67b355c`, 12 August 2026), copied without changes
-except that this README replaces the archive's own. It contains the code of every model, including the
+except that this README replaces the archive's own and that `code/conformal.py`, which was missing from
+the archive, was reconstructed in revision (see below). It contains the code of every model, including the
 deep networks and the Kaya-guided hybrids, and their stored out-of-fold estimates. The run order, the
 software versions and the expected values are in [`REPRODUCE.md`](REPRODUCE.md).
 
@@ -17,6 +18,7 @@ software versions and the expected values are in [`REPRODUCE.md`](REPRODUCE.md).
 | `code/train_enriched.py`, `code/regen_enriched.py` | Experiment C (76 countries, seven covariates) |
 | `code/experiment_b.py` | Experiment B (temporal forecasting against persistence) |
 | `code/clustered_stats.py`, `code/analysis.py` | Country-clustered tests and summary results |
+| `code/conformal.py` | Monte-Carlo dropout and split-conformal intervals for the hybrid of Experiment C (reconstructed in revision) |
 | `code/figures_part1.py`, `code/figures_part2.py`, `code/rebuild_figures.py` | Figures, SHAP and attention results |
 | `data/raw/` | The two Our World in Data source files (identical to `../data/owid-*.csv`) |
 | `data/panel_clean.csv`, `data/enriched.npz`, `data/meta_enriched.csv`, `data/folds_enriched.pkl` | Harmonized panel, Experiment C arrays and fold assignment |
@@ -26,7 +28,8 @@ software versions and the expected values are in [`REPRODUCE.md`](REPRODUCE.md).
 | `results/oof_parts/oofE_<model>.npz` | Out-of-fold estimates of ridge, LightGBM and E-PSO-KG-CBA, Experiment C |
 | `results/oof_parts/E-PSO-KG-CBA_fold<k>.keras`, `..._scaler_fold<k>.npz` | Trained hybrid networks of Experiment C and their standardization constants |
 | `results/loco_meta.csv` | Country, year and observed value of each row of the Experiment A estimates |
-| `results/conformal_regen.*` | Monte-Carlo dropout and split-conformal intervals |
+| `results/conformal_regen.*` | Monte-Carlo dropout and split-conformal intervals of the original run (E-PSO-KG-CBA, Experiment C) |
+| `results/conformal_rerun.*` | The same intervals from the reconstructed `code/conformal.py` (seed 42) |
 | `results/*.json`, `results/*.csv` | Values behind the tables and figures of the original submission |
 
 ## Checked against the revised manuscript
@@ -41,9 +44,14 @@ countries (`../analysis/out/oof_experiment_*_rescored.csv`).
 
 ## Known gaps in this archive
 
-- `code/conformal.py`, step 8 of `REPRODUCE.md`, is not in the archive. Its outputs are in
-  `results/conformal_regen.json` and `results/conformal_regen.npz`. They are the intervals of the hybrid
-  of Experiment C (E-PSO-KG-CBA, 76 countries, 2,052 rows).
+- `code/conformal.py`, step 8 of `REPRODUCE.md`, was not in the archive; only its outputs were
+  (`results/conformal_regen.*`, the intervals of the hybrid of Experiment C: E-PSO-KG-CBA, 76 countries,
+  2,052 rows). It was reconstructed in revision from the method in the manuscript and the stored fold
+  networks. The rebuilt networks reproduce the stored estimates exactly. Monte-Carlo dropout is random
+  and the seeding of the original run is unknown, so the intervals cannot be reproduced bit for bit: in
+  27 runs with different seeds, coverage ranged from 81.0% to 83.0% (stored 81.9%) and mean width from
+  5.40 to 6.04 t CO₂ per person (stored 5.68). The script docstring gives the details. It loads only the
+  weights of the stored networks, so it does not depend on the Python version that saved them.
 - `pso_state.json`, the log of the particle swarm search read by `code/pso.py` and `code/figures_part1.py`,
   is not in the archive.
 - The scripts do not share one working-directory convention. `build_panel.py`, `loco_classical.py` and
