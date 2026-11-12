@@ -1,0 +1,113 @@
+iso,country,continent,n_filled_energy_per_capita,run_energy_per_capita,n_filled_gdp_pc,run_gdp_pc,n_filled_population,run_population,n_filled_coal_share,run_coal_share,n_filled_oil_share,run_oil_share,n_filled_gas_share,run_gas_share,n_filled_co2_per_capita,run_co2_per_capita,longest_run,in_enriched_subpanel
+SLV,El Salvador,North America,0,0,1,1,0,0,3,3,0,0,31,31,0,0,31,False
+NER,Niger,Africa,0,0,1,1,0,0,0,0,0,0,29,29,0,0,29,False
+PAN,Panama,North America,0,0,1,1,0,0,7,7,0,0,28,28,0,0,28,False
+GHA,Ghana,Africa,0,0,1,1,0,0,26,26,0,0,19,19,0,0,26,False
+JAM,Jamaica,North America,0,0,1,1,0,0,0,0,0,0,26,26,0,0,26,False
+GTM,Guatemala,North America,0,0,1,1,0,0,9,9,0,0,26,26,0,0,26,False
+CMR,Cameroon,Africa,0,0,1,1,0,0,26,26,0,0,12,12,0,0,26,False
+RWA,Rwanda,Africa,0,0,1,1,0,0,25,25,0,0,0,0,0,0,25,False
+BEN,Benin,Africa,0,0,1,1,0,0,24,24,0,0,23,23,0,0,24,False
+BOL,Bolivia,South America,0,0,1,1,0,0,21,21,0,0,0,0,0,0,21,False
+YEM,Yemen,Asia,0,0,1,1,0,0,18,18,0,0,19,19,0,0,19,False
+LBN,Lebanon,Asia,0,0,1,1,0,0,3,3,0,0,26,18,0,0,18,False
+JOR,Jordan,Asia,0,0,1,1,0,0,18,18,0,0,0,0,0,0,18,False
+SRB,Serbia,Europe,16,16,1,1,0,0,0,0,0,0,0,0,0,0,16,False
+LBY,Libya,Africa,0,0,1,1,0,0,15,15,0,0,0,0,0,0,15,False
+DOM,Dominican Republic,North America,0,0,1,1,0,0,0,0,0,0,13,13,0,0,13,False
+SEN,Senegal,Africa,0,0,1,1,0,0,12,12,0,0,0,0,0,0,12,False
+TUN,Tunisia,Africa,0,0,1,1,0,0,17,11,0,0,0,0,0,0,11,False
+ARE,United Arab Emirates,Asia,0,0,3,2,0,0,11,11,0,0,0,0,0,0,11,True
+TZA,Tanzania,Africa,0,0,1,1,0,0,0,0,0,0,9,9,0,0,9,False
+URY,Uruguay,South America,0,0,1,1,0,0,0,0,0,0,8,8,0,0,8,False
+MKD,North Macedonia,Europe,0,0,1,1,0,0,0,0,0,0,8,8,0,0,8,True
+AZE,Azerbaijan,Asia,0,0,1,1,0,0,8,8,0,0,0,0,0,0,8,True
+HKG,Hong Kong,Asia,0,0,1,1,0,0,0,0,0,0,5,5,0,0,5,True
+PHL,Philippines,Asia,0,0,1,1,0,0,0,0,0,0,4,4,0,0,4,True
+ARM,Armenia,Asia,2,2,1,1,0,0,0,0,0,0,0,0,0,0,2,False
+GEO,Georgia,Asia,2,2,1,1,0,0,0,0,0,0,0,0,0,0,2,False
+TJK,Tajikistan,Asia,2,2,1,1,0,0,0,0,0,0,0,0,0,0,2,False
+KGZ,Kyrgyzstan,Asia,2,2,1,1,0,0,0,0,0,0,0,0,0,0,2,False
+SGP,Singapore,Asia,0,0,1,1,0,0,0,0,0,0,2,2,0,0,2,True
+MOZ,Mozambique,Africa,0,0,1,1,0,0,0,0,0,0,2,2,0,0,2,False
+MDA,Moldova,Europe,2,2,1,1,0,0,0,0,0,0,0,0,0,0,2,False
+BIH,Bosnia and Herzegovina,Europe,2,2,1,1,0,0,0,0,0,0,0,0,0,0,2,False
+BRA,Brazil,South America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+BGD,Bangladesh,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+BLR,Belarus,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+BEL,Belgium,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+ALB,Albania,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+CHE,Switzerland,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+BWA,Botswana,Africa,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+COL,Colombia,South America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+CUB,Cuba,North America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+CZE,Czechia,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+BGR,Bulgaria,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+AUT,Austria,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+AUS,Australia,Oceania,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+ARG,Argentina,South America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+AFG,Afghanistan,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+IRN,Iran,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+IRL,Ireland,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+IND,India,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+IDN,Indonesia,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+HUN,Hungary,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+HRV,Croatia,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+GBR,United Kingdom,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+GRC,Greece,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+EST,Estonia,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+ESP,Spain,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+FIN,Finland,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+FRA,France,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+DEU,Germany,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+DNK,Denmark,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+DZA,Algeria,Africa,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+EGY,Egypt,Africa,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+CAN,Canada,North America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+COD,Democratic Republic of Congo,Africa,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+CHN,China,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+CHL,Chile,South America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+CYP,Cyprus,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+KOR,South Korea,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+LTU,Lithuania,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+KWT,Kuwait,Asia,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,True
+LVA,Latvia,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+LUX,Luxembourg,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+ISR,Israel,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+JPN,Japan,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+KAZ,Kazakhstan,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+ITA,Italy,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+IRQ,Iraq,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+ISL,Iceland,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+PAK,Pakistan,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+OMN,Oman,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+NZL,New Zealand,Oceania,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+NOR,Norway,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+NGA,Nigeria,Africa,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+NLD,Netherlands,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+MMR,Myanmar,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+MYS,Malaysia,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+MAR,Morocco,Africa,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+MEX,Mexico,North America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+MLT,Malta,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+QAT,Qatar,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+RUS,Russia,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+ROU,Romania,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+POL,Poland,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+PER,Peru,South America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+SWE,Sweden,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+SVN,Slovenia,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+SVK,Slovakia,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+SAU,Saudi Arabia,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+PRT,Portugal,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+THA,Thailand,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+TKM,Turkmenistan,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+SYR,Syria,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,False
+TWN,Taiwan,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+TUR,Turkey,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+USA,United States,North America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+UKR,Ukraine,Europe,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+UZB,Uzbekistan,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+VEN,Venezuela,South America,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+VNM,Vietnam,Asia,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True
+ZAF,South Africa,Africa,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,True

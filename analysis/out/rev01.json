@@ -1,0 +1,130 @@
+{
+ "size": {
+  "countries": 112,
+  "years": 34,
+  "country_years": 3808,
+  "windows": 3024,
+  "target_years": [
+   1997,
+   2023
+  ],
+  "targets_per_country": 27,
+  "enriched_countries": 76,
+  "enriched_country_years": 2584,
+  "enriched_windows": 2052
+ },
+ "corr": {
+  "ln_co2pc": 1.0,
+  "log_epc": 0.9697648294671083,
+  "log_gdppc": 0.8777455392291379,
+  "log_pop": -0.22052158944458394,
+  "coal": 0.2707372433758837,
+  "oil": -0.4107302090950144,
+  "gas": 0.26291073444838775
+ },
+ "audit": {
+  "n_gt3": 25,
+  "n_gt10": 19,
+  "gt3": [
+   "SLV",
+   "NER",
+   "PAN",
+   "GHA",
+   "JAM",
+   "GTM",
+   "CMR",
+   "RWA",
+   "BEN",
+   "BOL",
+   "YEM",
+   "LBN",
+   "JOR",
+   "SRB",
+   "LBY",
+   "DOM",
+   "SEN",
+   "TUN",
+   "ARE",
+   "TZA",
+   "URY",
+   "MKD",
+   "AZE",
+   "HKG",
+   "PHL"
+  ],
+  "gt3_runs": [
+   31,
+   29,
+   28,
+   26,
+   26,
+   26,
+   26,
+   25,
+   24,
+   21,
+   19,
+   18,
+   18,
+   16,
+   15,
+   13,
+   12,
+   11,
+   11,
+   9,
+   8,
+   8,
+   8,
+   5,
+   4
+  ],
+  "gt3_by_continent": {
+   "Africa": 9,
+   "Asia": 7,
+   "North America": 5,
+   "South America": 2,
+   "Europe": 2
+  },
+  "gt10_by_continent": {
+   "Africa": 8,
+   "North America": 5,
+   "Asia": 4,
+   "South America": 1,
+   "Europe": 1
+  },
+  "filled": {
+   "energy_per_capita": 28,
+   "gdp_pc": 114,
+   "population": 0,
+   "coal_share": 244,
+   "oil_share": 0,
+   "gas_share": 291,
+   "co2_per_capita": 0
+  },
+  "longest": {
+   "energy_per_capita": 16,
+   "gdp_pc": 2,
+   "population": 0,
+   "coal_share": 26,
+   "oil_share": 0,
+   "gas_share": 31,
+   "co2_per_capita": 0
+  },
+  "countries_any_fill_excl_gdp": 34,
+  "gdp_2023_filled": 112,
+  "gdp_other": [
+   [
+    "ARE",
+    3,
+    2
+   ]
+  ]
+ },
+ "range": {
+  "min": 0.032,
+  "max": 364.791,
+  "max_target": 76.715,
+  "min_target": 0.032
+ }
+}
