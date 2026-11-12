@@ -17,7 +17,7 @@ for rep in range(200):
     hit = {l: np.zeros(len(y), bool) for l in levels}; w90 = np.zeros(len(y))
     fc = []
     for k, (tr, te) in enumerate(outer):
-        cs = np.unique(iso[tr]); cal_c = rng.choice(cs, size=int(round(len(cs) / 7)), replace=False)
+        cs = np.unique(iso[tr]); cal_c = rng.choice(cs, size=len(cs) // 7, replace=False)
         cal = tr[np.isin(iso[tr], cal_c)]; fit = tr[~np.isin(iso[tr], cal_c)]
         s = np.abs(y[cal] - fitpred(fit, cal)); yh = fitpred(fit, te)
         for l in levels:
@@ -29,7 +29,7 @@ res["single_split"] = {str(l): dict(mean=float(np.mean(v)), p5=float(np.percenti
 fc = np.array(fold_cov_a)
 res["single_split_fold90"] = dict(min=float(fc.min()), p5=float(np.percentile(fc, 5)), median=float(np.median(fc)), p95=float(np.percentile(fc, 95)), max=float(fc.max()))
 res["single_split_width90"] = float(np.mean(width_a)); res["single_split_q90_range"] = [float(np.min(qs_a)), float(np.max(qs_a))]
-res["n_cal_countries_single"] = int(round(len(np.unique(iso[outer[0][0]])) / 7))
+res["n_cal_countries_single"] = sorted({len(np.unique(iso[tr])) // 7 for tr, _ in outer})
 # (b) grouped cross-conformal: out-of-fold residuals for all training countries (inner grouped 5-fold)
 hit = {l: np.zeros(len(y), bool) for l in levels}; w90 = np.zeros(len(y)); fcb = []; qb = []; lo = np.zeros(len(y)); hi = np.zeros(len(y))
 for k, (tr, te) in enumerate(outer):

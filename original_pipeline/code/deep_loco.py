@@ -1,4 +1,5 @@
 import os, json, pickle, random
+import paths as P
 os.environ['TF_CPP_MIN_LOG_LEVEL']='3'
 import numpy as np, pandas as pd
 import tensorflow as tf
@@ -10,7 +11,7 @@ def set_seed(s=SEED):
 set_seed()
 
 # ---------------- Data ----------------
-df = pd.read_csv('panel_clean.csv').sort_values(['iso_code','year'])
+df = pd.read_csv(P.data('panel_clean.csv')).sort_values(['iso_code','year'])
 covs = ['energy_per_capita','gdp_per_capita','log_population','coal_share','oil_share','gas_share']
 df = df.dropna(subset=covs+['co2_per_capita']).copy()
 df['log_epc'] = np.log10(df.energy_per_capita.clip(lower=1))
@@ -104,11 +105,15 @@ def train_eval(kind, hp=None, tag=None, save_dir=None):
     return res,oof,hist
 
 if __name__=='__main__':
+    # LEGACY - not part of the run order in REPRODUCE.md. Kept as the record of the first submission.
+    # Its inputs are read from the standard folders (paths.py) and its outputs are written to results/legacy/,
+    # so running it never overwrites the outputs of the run order.
+    # Superseded by run_deep.py (step 3).
     all_res={}; all_oof={}; all_hist={}
     for kind in ['LSTM','GRU','CNN-LSTM','CNN-BiLSTM-Attn']:
-        res,oof,hist=train_eval(kind,save_dir='models' if kind=='CNN-BiLSTM-Attn' else None)
+        res,oof,hist=train_eval(kind,save_dir=P.legacy('models') if kind=='CNN-BiLSTM-Attn' else None)
         all_res[kind]=res; all_oof[kind]=oof; all_hist[kind]=hist
         print(f'{kind:18s}',{k:round(v,3) for k,v in res.items()},flush=True)
-    np.savez('deep_oof.npz',**all_oof)
-    pickle.dump(dict(res=all_res,hist=all_hist,meta=meta,folds=folds,X=X,y=y,FEATS=FEATS),open('deep_loco.pkl','wb'))
-    json.dump(all_res,open('results_deep.json','w'),indent=1)
+    np.savez(P.legacy('deep_oof.npz'),**all_oof)
+    pickle.dump(dict(res=all_res,hist=all_hist,meta=meta,folds=folds,X=X,y=y,FEATS=FEATS),open(P.legacy('deep_loco.pkl'),'wb'))
+    json.dump(all_res,open(P.legacy('results_deep.json'),'w'),indent=1)

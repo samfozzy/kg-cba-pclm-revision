@@ -4,8 +4,8 @@ Experiment A — classical / statistical LOCO baselines, with out-of-fold predic
 Regenerates oof_classical.npz (one out-of-fold log-prediction vector per model), which
 analysis.py, figures_part2.py and clustered_stats.py all consume. Deterministic.
 
-Ridge is fitted on the most recent window step (eq. 6); all other classical learners
-operate on the flattened W x F window (Section 3.4). Standardisation uses training-fold
+Ridge, like the other classical learners, is fitted on the flattened W x F window (eq. 6); the
+last-step ridge is used only to warm-start the Kaya head of the hybrids (REPRODUCE.md, note 1). Standardisation uses training-fold
 moments only, pooled over samples and time steps, matching deep_loco.py.
 """
 import json, os
@@ -18,12 +18,12 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GroupKFold
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
+import paths as P
 
 SEED = 42
 W = 8
-DATA = os.environ.get("PANEL", "data/panel_clean.csv")
-OUT = "results"
-os.makedirs(OUT, exist_ok=True)
+DATA = os.environ.get("PANEL", P.data("panel_clean.csv"))
+OUT = P.RESULTS
 
 FEATS = ["log_epc", "log_gpc", "log_population", "coal_share", "oil_share", "gas_share"]
 

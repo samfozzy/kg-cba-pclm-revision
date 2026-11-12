@@ -1,5 +1,14 @@
+"""
+LEGACY - not part of the run order in REPRODUCE.md. Kept as the record of the first submission.
+Its inputs are read from the standard folders (paths.py) and its outputs are written to results/legacy/,
+so running it never overwrites the outputs of the run order.
+Superseded by clustered_stats.py (step 7), conformal.py (step 8) and rebuild_figures.py (step 10).
+Two known problems are kept as they were run: the Wilcoxon tests are observation-level (see clustered_stats.py),
+and the SHAP values are reshaped to (N, F, W) instead of (N, W, F) (REPRODUCE.md, note 2).
+"""
 import os, json, pickle
 os.environ['TF_CPP_MIN_LOG_LEVEL']='3'
+import paths as P
 import numpy as np, pandas as pd, tensorflow as tf
 from scipy.stats import wilcoxon
 
@@ -8,11 +17,11 @@ out = {}
 # ---------- Panel A (112 countries, 6 covariates) ----------
 from deep_loco import meta as metaA, X as XA, y as yA, folds as foldsA
 oA = {}
-cz = np.load('oof_classical.npz')
+cz = np.load(P.results('oof_classical.npz'))
 for k in cz.files: oA[k] = cz[k]
-for k in ['LSTM','GRU','CNN-LSTM','CNN-BiLSTM-Attn']: oA[k] = np.load(f'oof_{k}.npz')['oof']
-oA['KG-CBA'] = np.load('oof_KG-CBA.npz')['oof']
-oA['PSO-KG-CBA'] = np.load('oof_PSO-KG-CBA.npz')['oof']
+for k in ['LSTM','GRU','CNN-LSTM','CNN-BiLSTM-Attn']: oA[k] = np.load(P.oof(f'oof_{k}.npz'))['oof']
+oA['KG-CBA'] = np.load(P.oof('oof_KG-CBA.npz'))['oof']
+oA['PSO-KG-CBA'] = np.load(P.oof('oof_PSO-KG-CBA.npz'))['oof']
 oA['Ensemble'] = (oA['Ridge']+oA['GRU']+oA['PSO-KG-CBA'])/3.0
 tA = metaA.y_raw.values
 
@@ -26,9 +35,9 @@ resA = {k: summarize(tA, v) for k,v in oA.items()}
 out['panelA'] = resA
 
 # ---------- Panel C (76 countries, 7 covariates) ----------
-metaE = pd.read_csv('meta_enriched.csv'); dE=np.load('enriched.npz'); XE,yE=dE['X'],dE['y']
-oE = {'Ridge': np.load('oofE_Ridge.npz')['oof'], 'LightGBM': np.load('oofE_LightGBM.npz')['oof'],
-      'PSO-KG-CBA': np.load('oofE_PSO-KG-CBA.npz')['oof']}
+metaE = pd.read_csv(P.data('meta_enriched.csv')); dE=np.load(P.data('enriched.npz')); XE,yE=dE['X'],dE['y']
+oE = {'Ridge': np.load(P.oof('oofE_Ridge.npz'))['oof'], 'LightGBM': np.load(P.oof('oofE_LightGBM.npz'))['oof'],
+      'PSO-KG-CBA': np.load(P.oof('oofE_PSO-KG-CBA.npz'))['oof']}
 oE['Ensemble'] = (oE['Ridge']+oE['PSO-KG-CBA'])/2.0
 oE['Ensemble3'] = (oE['Ridge']+oE['LightGBM']+oE['PSO-KG-CBA'])/3.0
 tE = metaE.y_raw.values
@@ -50,10 +59,11 @@ for a,b,panel in pairs:
 out['wilcoxon'] = sig
 
 # ---------- Per-continent / Africa & Ghana ----------
-cont = pd.read_csv('owid-co2-data.csv')[['iso_code','country']].drop_duplicates()
-# continent mapping from user's synthetic file (real static fields)
-syn = pd.read_csv('global_climate_impact_1990_2025.csv')[['ISO3','Continent']].drop_duplicates().rename(columns={'ISO3':'iso_code'})
-mA = metaA.merge(syn, left_on='iso', right_on='iso_code', how='left')
+cont = pd.read_csv(os.path.join(P.RAW, 'owid-co2-data.csv'))[['iso_code','country']].drop_duplicates()
+# continent of each country (the file used in the first submission is not in the archive; code/continents.csv
+# holds the same assignment)
+syn = pd.read_csv(P.CONTINENTS).rename(columns={'continent':'Continent'})
+mA = metaA.merge(syn, on='iso', how='left')
 best='Ensemble'
 mA['ape'] = ape(tA,oA[best])*100
 by_cont = mA.groupby('Continent')['ape'].agg(['median','mean','count']).round(2)
@@ -64,14 +74,13 @@ out['ghana'] = dict(n=int(len(gha)), median_ape=float(gha.ape.median()), mean_ap
 print('Ghana median APE %.2f%%' % gha.ape.median())
 
 # ---------- MC-dropout uncertainty on E-PSO-KG-CBA ----------
-from train_enriched import TemporalAttention
-folds_E = pickle.load(open('folds_enriched.pkl','rb'))
+from conformal import TemporalAttention, load_fold_model   # importing train_enriched would train the networks
+folds_E = pickle.load(open(P.data('folds_enriched.pkl'),'rb'))
 mc_mean=np.full(len(yE),np.nan); mc_std=np.full(len(yE),np.nan)
 T=60
 for fi,(trn,tst) in enumerate(folds_E):
-    m=tf.keras.models.load_model(f'models/E-PSO-KG-CBA_fold{fi}.keras',
-        custom_objects={'TemporalAttention':TemporalAttention},safe_mode=False)
-    s=np.load(f'models/E-PSO-KG-CBA_scaler_fold{fi}.npz')
+    m=load_fold_model(P.oof(f'E-PSO-KG-CBA_fold{fi}.keras'), XE.shape[2])
+    s=np.load(P.oof(f'E-PSO-KG-CBA_scaler_fold{fi}.npz'))
     Z=(XE[tst]-s['mu'])/s['sd']
     sims=np.stack([m(Z,training=True).numpy().ravel() for _ in range(T)])
     mc_mean[tst]=sims.mean(0); mc_std[tst]=sims.std(0)
@@ -83,13 +92,12 @@ resid=np.abs(np.log(tE)-mc_mean); infl=float(np.quantile(resid/np.clip(mc_std,1e
 lo2,hi2=np.exp(mc_mean-infl*mc_std), np.exp(mc_mean+infl*mc_std)
 out['uncertainty']=dict(T=T, picp_raw=picp, mpiw_raw=mpiw, inflation=infl,
     picp_cal=float(np.mean((tE>=lo2)&(tE<=hi2))), mpiw_cal=float(np.mean(hi2-lo2)))
-np.savez('mc_dropout.npz', mean=mc_mean, std=mc_std, lo=lo2, hi=hi2)
+np.savez(P.legacy('mc_dropout.npz'), mean=mc_mean, std=mc_std, lo=lo2, hi=hi2)
 print('\nMC-dropout: raw PICP=%.3f | calibrated PICP=%.3f (infl=%.2f)'%(picp,out['uncertainty']['picp_cal'],infl))
 
 # ---------- Attention weights (manual recompute, fold 0) ----------
-m0=tf.keras.models.load_model('models/E-PSO-KG-CBA_fold0.keras',
-    custom_objects={'TemporalAttention':TemporalAttention},safe_mode=False)
-s0=np.load('models/E-PSO-KG-CBA_scaler_fold0.npz')
+m0=load_fold_model(P.oof('E-PSO-KG-CBA_fold0.keras'), XE.shape[2])
+s0=np.load(P.oof('E-PSO-KG-CBA_scaler_fold0.npz'))
 att_layer=[l for l in m0.layers if isinstance(l,TemporalAttention)][0]
 # submodel up to dropout before attention
 drop_out=None
@@ -119,8 +127,8 @@ names=[f'{f}_t-{7-j}' if j<7 else f'{f}_t' for f in FE for j in range(8)]
 sv_abs=np.abs(sv).reshape(len(sv),len(FE),8)
 out['shap_by_feature']={FE[i]: float(sv_abs[:,i,:].mean()) for i in range(len(FE))}
 out['shap_by_lag']={f't-{7-j}': float(sv_abs[:,:,j].mean()) for j in range(8)}
-np.savez('shap_fold0.npz', sv=sv, Xtst=scal.transform(Xf[tst]), tst=tst)
+np.savez(P.legacy('shap_fold0.npz'), sv=sv, Xtst=scal.transform(Xf[tst]), tst=tst)
 print('SHAP by feature:', {k:round(v,4) for k,v in out['shap_by_feature'].items()})
 
-json.dump(out, open('analysis.json','w'), indent=1)
-print('\nSaved analysis.json')
+json.dump(out, open(P.legacy('analysis.json'),'w'), indent=1)
+print('\nSaved results/legacy/analysis.json')

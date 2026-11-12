@@ -5,12 +5,12 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+import paths as P
 
 plt.rcParams.update({'font.size':9,'axes.spines.top':False,'axes.spines.right':False,
                      'figure.dpi':110,'savefig.dpi':300,'savefig.bbox':'tight'})
 C=['#0173B2','#DE8F05','#029E73','#D55E00','#CC78BC','#CA9161','#949494','#ECE133','#56B4E9','#7A4FA3','#117733','#882255']
-os.makedirs('figures',exist_ok=True)
-df=pd.read_csv('panel_clean.csv')
+df=pd.read_csv(P.data('panel_clean.csv'))
 
 # F1 - global trends
 fig,ax=plt.subplots(1,2,figsize=(9,3.4))
@@ -24,7 +24,7 @@ for i,iso in enumerate(['USA','CHN','IND','DEU','GHA','QAT']):
     ax[1].plot(g.year,g.co2_per_capita,label=iso,color=C[i],lw=1.6)
 ax[1].set(title='(b) Selected national trajectories',xlabel='Year',yscale='log')
 ax[1].legend(ncol=3,fontsize=7.5,frameon=False)
-plt.tight_layout(); plt.savefig('figures/F01_trends.png'); plt.close()
+plt.tight_layout(); plt.savefig(P.FIGURES+'/F01_trends.png'); plt.close()
 
 # F2 - correlation heatmap (log-space covariates, panel A)
 d2=df.copy()
@@ -41,17 +41,18 @@ for i in range(len(cols)):
         ax.text(j,i,f'{R[i,j]:.2f}',ha='center',va='center',fontsize=7,
                 color='white' if abs(R[i,j])>.6 else 'black')
 plt.colorbar(im,shrink=.8); ax.set_title('Pearson correlations (n = 3,808 country-years)')
-plt.savefig('figures/F02_corr.png'); plt.close()
+plt.savefig(P.FIGURES+'/F02_corr.png'); plt.close()
 
 # F3 - distribution by continent
-syn=pd.read_csv('global_climate_impact_1990_2025.csv')[['ISO3','Continent']].drop_duplicates()
-d3=df.merge(syn,left_on='iso_code',right_on='ISO3')
+syn=pd.read_csv(P.CONTINENTS).rename(columns={'continent':'Continent'})
+d3=df.merge(syn,left_on='iso_code',right_on='iso')
 order=d3.groupby('Continent').co2_per_capita.median().sort_values().index
 fig,ax=plt.subplots(figsize=(6,3.2))
-bp=ax.boxplot([d3[d3.Continent==c].co2_per_capita for c in order],labels=order,showfliers=False,patch_artist=True)
+bp=ax.boxplot([d3[d3.Continent==c].co2_per_capita for c in order],showfliers=False,patch_artist=True)
+ax.set_xticks(range(1,len(order)+1)); ax.set_xticklabels(order)   # 'labels=' was removed in recent Matplotlib
 for p,c in zip(bp['boxes'],C): p.set_facecolor(c); p.set_alpha(.6)
 ax.set(yscale='log',ylabel='t CO$_2$ person$^{-1}$ yr$^{-1}$',title='Per-capita CO$_2$ by continent, 1990-2023')
-plt.savefig('figures/F03_continent_dist.png'); plt.close()
+plt.savefig(P.FIGURES+'/F03_continent_dist.png'); plt.close()
 
 # F4 - methodology flowchart
 fig,ax=plt.subplots(figsize=(9.2,4.6)); ax.axis('off')
@@ -77,7 +78,7 @@ arr(.18,.22,.24,.72); arr(.18,.22,.24,.11); arr(.41,.72,.455,.75)
 arr(.41,.4,.455,.72); arr(.545,.60,.545,.48); arr(.645,.75,.685,.73)
 arr(.645,.75,.685,.4); arr(.825,.72,.865,.72); arr(.825,.38,.865,.38)
 ax.set_title('Experimental framework overview',fontsize=10)
-plt.savefig('figures/F04_flowchart.png'); plt.close()
+plt.savefig(P.FIGURES+'/F04_flowchart.png'); plt.close()
 
 # F5 - KG-CBA architecture schematic
 fig,ax=plt.subplots(figsize=(9.2,3.6)); ax.axis('off')
@@ -92,10 +93,10 @@ arr(.14,.55,.18,.72); arr(.14,.45,.18,.22); arr(.33,.2,.37,.2); arr(.52,.2,.56,.
 arr(.72,.2,.76,.2); arr(.825,.32,.825,.62); arr(.33,.74,.76,.74)
 ax.text(.5,.95,'Kaya-guided CNN-BiLSTM-Attention (KG-CBA): physics-informed linear backbone + deep residual branch',
         ha='center',fontsize=9.5)
-plt.savefig('figures/F05_architecture.png'); plt.close()
+plt.savefig(P.FIGURES+'/F05_architecture.png'); plt.close()
 
 # F6 - PSO convergence
-st=json.load(open('pso_state.json'))
+st=json.load(open(P.PSO_STATE))
 fs=[l['f'] for l in st['log']]
 best=np.minimum.accumulate(fs)
 fig,ax=plt.subplots(figsize=(5,3))
@@ -103,32 +104,39 @@ ax.plot(range(1,len(fs)+1),fs,'o',ms=4,color=C[1],alpha=.6,label='particle evalu
 ax.step(range(1,len(fs)+1),best,where='post',color=C[0],lw=2,label='global best')
 ax.set(xlabel='Fitness evaluation',ylabel='Validation MSE (log-space)',title='PSO convergence (6 particles x 5 iterations)')
 ax.legend(frameon=False)
-plt.savefig('figures/F06_pso.png'); plt.close()
+plt.savefig(P.FIGURES+'/F06_pso.png'); plt.close()
 
-# F7 - training curves
-fig,ax=plt.subplots(1,2,figsize=(8.6,3))
-for i,k in enumerate(['LSTM','GRU','CNN-LSTM','CNN-BiLSTM-Attn']):
-    h=np.load(f'hist_{k}.npz')
-    ax[0].plot(h['f0_loss'],color=C[i],lw=1.4,label=k)
-    ax[1].plot(h['f0_val_loss'],color=C[i],lw=1.4,label=k)
-ax[0].set(title='(a) Training loss (fold 1)',xlabel='Epoch',ylabel='MSE',yscale='log')
-ax[1].set(title='(b) Validation loss (fold 1)',xlabel='Epoch',yscale='log')
-ax[1].legend(frameon=False,fontsize=8)
-plt.tight_layout(); plt.savefig('figures/F07_training.png'); plt.close()
+# F7 and F8 of the first submission need the outputs of the legacy scripts run_arch.py (hist_<model>.npz) and
+# analysis.py (analysis.json). rebuild_figures.py (step 10) rebuilds both figures from the outputs of the run
+# order, so here they are drawn only when those legacy outputs exist.
+if all(os.path.exists(P.legacy(f'hist_{k}.npz')) for k in ['LSTM','GRU','CNN-LSTM','CNN-BiLSTM-Attn']) \
+        and os.path.exists(P.legacy('analysis.json')):
+    # F7 - training curves
+    fig,ax=plt.subplots(1,2,figsize=(8.6,3))
+    for i,k in enumerate(['LSTM','GRU','CNN-LSTM','CNN-BiLSTM-Attn']):
+        h=np.load(P.legacy(f'hist_{k}.npz'))
+        ax[0].plot(h['f0_loss'],color=C[i],lw=1.4,label=k)
+        ax[1].plot(h['f0_val_loss'],color=C[i],lw=1.4,label=k)
+    ax[0].set(title='(a) Training loss (fold 1)',xlabel='Epoch',ylabel='MSE',yscale='log')
+    ax[1].set(title='(b) Validation loss (fold 1)',xlabel='Epoch',yscale='log')
+    ax[1].legend(frameon=False,fontsize=8)
+    plt.tight_layout(); plt.savefig(P.FIGURES+'/F07_training.png'); plt.close()
 
-# F8 - model comparison bars (panel A)
-res=json.load(open('analysis.json'))['panelA']
-order=['Mean','kNN','SVR','RF','XGBoost','LightGBM','LSTM','CNN-LSTM','CNN-BiLSTM-Attn','GRU','KG-CBA','PSO-KG-CBA','Ridge','Ensemble']
-mape=[res[m]['MAPE'] for m in order]; mdape=[res[m]['MdAPE'] for m in order]
-fig,ax=plt.subplots(figsize=(9,3.4))
-xp=np.arange(len(order))
-ax.bar(xp-.2,mape,.4,color=C[0],label='MAPE')
-ax.bar(xp+.2,mdape,.4,color=C[1],label='MdAPE')
-ax.set_xticks(xp,order,rotation=38,ha='right')
-ax.set(ylabel='%',title='Experiment A: leave-country-out error by model (112 countries)')
-ax.set_ylim(0,60); ax.axhline(res['Ensemble']['MdAPE'],ls=':',color='gray',lw=1)
-for i,v in enumerate(mape):
-    if v>60: ax.text(xp[i]-.2,57,f'{v:.0f}',ha='center',fontsize=7,rotation=90,color=C[0])
-ax.legend(frameon=False)
-plt.savefig('figures/F08_model_comparison.png'); plt.close()
-print('figures part 1 done:', sorted(os.listdir('figures')))
+    # F8 - model comparison bars (panel A)
+    res=json.load(open(P.legacy('analysis.json')))['panelA']
+    order=['Mean','kNN','SVR','RF','XGBoost','LightGBM','LSTM','CNN-LSTM','CNN-BiLSTM-Attn','GRU','KG-CBA','PSO-KG-CBA','Ridge','Ensemble']
+    mape=[res[m]['MAPE'] for m in order]; mdape=[res[m]['MdAPE'] for m in order]
+    fig,ax=plt.subplots(figsize=(9,3.4))
+    xp=np.arange(len(order))
+    ax.bar(xp-.2,mape,.4,color=C[0],label='MAPE')
+    ax.bar(xp+.2,mdape,.4,color=C[1],label='MdAPE')
+    ax.set_xticks(xp,order,rotation=38,ha='right')
+    ax.set(ylabel='%',title='Experiment A: leave-country-out error by model (112 countries)')
+    ax.set_ylim(0,60); ax.axhline(res['Ensemble']['MdAPE'],ls=':',color='gray',lw=1)
+    for i,v in enumerate(mape):
+        if v>60: ax.text(xp[i]-.2,57,f'{v:.0f}',ha='center',fontsize=7,rotation=90,color=C[0])
+    ax.legend(frameon=False)
+    plt.savefig(P.FIGURES+'/F08_model_comparison.png'); plt.close()
+else:
+    print('F07 and F08 skipped here; rebuild_figures.py rebuilds them')
+print('figures part 1 done:', sorted(os.listdir(P.FIGURES)))

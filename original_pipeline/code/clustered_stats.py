@@ -19,12 +19,12 @@ import json, os
 import numpy as np
 import pandas as pd
 from scipy.stats import wilcoxon
+import paths as P
 
 RNG = np.random.default_rng(42)
 B = 10000
-OOF = 'oof_parts'
-OUT = 'results'
-os.makedirs(OUT, exist_ok=True)
+OOF = P.OOF
+OUT = P.RESULTS
 
 
 def cluster_boot(diff_by_country, stat=np.median):
@@ -79,7 +79,7 @@ def main():
     out['panelA'] = {k: metrics(t, np.exp(v)) for k, v in oA.items()}
     apeA = {k: np.abs((t - np.exp(v)) / t) * 100 for k, v in oA.items()}
 
-    metaE = pd.read_csv('meta_enriched.csv')
+    metaE = pd.read_csv(P.data('meta_enriched.csv'))
     tE, isoE = metaE.y_raw.values, metaE.iso.values
     oC = {k: np.load(f'{OOF}/oofE_{k}.npz')['oof'] for k in ['Ridge', 'LightGBM', 'PSO-KG-CBA']}
     oC['Ensemble'] = (oC['Ridge'] + oC['PSO-KG-CBA']) / 2.0
@@ -112,8 +112,8 @@ def main():
         print(m, 'top-6 share %.3f' % (top.sum() / se.sum()), list(top.index))
 
     # ---- continent + Ghana ----
-    panel = pd.read_csv('panel_clean.csv')[['iso_code', 'country']].drop_duplicates()
-    cont = pd.read_csv('continents.csv') if os.path.exists('continents.csv') else None
+    panel = pd.read_csv(P.data('panel_clean.csv'))[['iso_code', 'country']].drop_duplicates()
+    cont = pd.read_csv(P.CONTINENTS) if os.path.exists(P.CONTINENTS) else None
     d = pd.DataFrame(dict(iso=iso, ape=apeA['Ensemble']))
     out['ghana'] = dict(n=int((d.iso == 'GHA').sum()),
                         median_ape=float(d[d.iso == 'GHA'].ape.median()),

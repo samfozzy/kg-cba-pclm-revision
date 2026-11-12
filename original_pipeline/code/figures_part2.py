@@ -1,5 +1,13 @@
+"""
+LEGACY - not part of the run order in REPRODUCE.md. Kept as the record of the first submission.
+Its inputs are read from the standard folders (paths.py) and its outputs are written to results/legacy/,
+so running it never overwrites the outputs of the run order.
+Superseded by rebuild_figures.py (step 10) and conformal.py (step 8). Its figures go to results/legacy/.
+It needs results/legacy/analysis.json from analysis.py.
+"""
 import os, json, pickle
 os.environ['TF_CPP_MIN_LOG_LEVEL']='3'
+import paths as P
 import numpy as np, pandas as pd
 import matplotlib; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -8,12 +16,12 @@ import tensorflow as tf
 plt.rcParams.update({'font.size':9,'axes.spines.top':False,'axes.spines.right':False,
                      'figure.dpi':110,'savefig.dpi':300,'savefig.bbox':'tight'})
 C=['#0173B2','#DE8F05','#029E73','#D55E00','#CC78BC','#CA9161','#949494','#56B4E9']
-os.makedirs('figures',exist_ok=True)
+FIGL=P.legacy('figures'); os.makedirs(FIGL,exist_ok=True)
 
 from deep_loco import meta as metaA, X as XA, y as yA
-oA={k:np.load('oof_classical.npz')[k] for k in np.load('oof_classical.npz').files}
-for k in ['LSTM','GRU','CNN-LSTM','CNN-BiLSTM-Attn']: oA[k]=np.load(f'oof_{k}.npz')['oof']
-oA['KG-CBA']=np.load('oof_KG-CBA.npz')['oof']; oA['PSO-KG-CBA']=np.load('oof_PSO-KG-CBA.npz')['oof']
+oA={k:np.load(P.results('oof_classical.npz'))[k] for k in np.load(P.results('oof_classical.npz')).files}
+for k in ['LSTM','GRU','CNN-LSTM','CNN-BiLSTM-Attn']: oA[k]=np.load(P.oof(f'oof_{k}.npz'))['oof']
+oA['KG-CBA']=np.load(P.oof('oof_KG-CBA.npz'))['oof']; oA['PSO-KG-CBA']=np.load(P.oof('oof_PSO-KG-CBA.npz'))['oof']
 oA['Ensemble']=(oA['Ridge']+oA['GRU']+oA['PSO-KG-CBA'])/3
 tA=metaA.y_raw.values
 
@@ -26,7 +34,7 @@ for ax,name in zip(axs,['Ridge','GRU','PSO-KG-CBA','Ensemble']):
     ax.set(xscale='log',yscale='log',xlim=lim,ylim=lim,xlabel='Observed (t/person)',
            title=f"{name}\nR$^2$={1-np.sum((tA-p)**2)/np.sum((tA-tA.mean())**2):.3f}")
 axs[0].set_ylabel('Predicted (t/person)')
-plt.tight_layout(); plt.savefig('figures/F09_pred_vs_actual.png'); plt.close()
+plt.tight_layout(); plt.savefig(FIGL+'/F09_pred_vs_actual.png'); plt.close()
 
 # F10 - Pareto of SSE by country (Ensemble, panel A)
 e2=(tA-np.exp(oA['Ensemble']))**2
@@ -38,19 +46,19 @@ ax.set_xticks(range(15),top.index,rotation=45); ax.set_ylabel('Sum of squared er
 ax2=ax.twinx(); ax2.plot(range(15),cum.iloc[:15].values,color=C[1],marker='o',ms=3.5,lw=1.4)
 ax2.set_ylabel('Cumulative share of total SSE (%)',color=C[1]); ax2.set_ylim(0,100); ax2.spines['right'].set_visible(True)
 ax.set_title('Error concentration: structurally atypical energy systems dominate (red = identified outliers)')
-plt.savefig('figures/F10_pareto.png'); plt.close()
+plt.savefig(FIGL+'/F10_pareto.png'); plt.close()
 
 # F11 - covariate enrichment effect (A vs C)
-resA=json.load(open('analysis.json'))['panelA']; resC=json.load(open('analysis.json'))['panelC']
+resA=json.load(open(P.legacy('analysis.json')))['panelA']; resC=json.load(open(P.legacy('analysis.json')))['panelC']
 # recompute panel-A metrics restricted to the 76 enriched countries for a fair comparison
-metaE=pd.read_csv('meta_enriched.csv'); iso76=set(metaE.iso)
+metaE=pd.read_csv(P.data('meta_enriched.csv')); iso76=set(metaE.iso)
 maskA76=metaA.iso.isin(iso76).values
 def summ(t,p_log):
     p=np.exp(p_log); e=t-p
     return dict(MAPE=np.mean(np.abs(e/t))*100, MdAPE=np.median(np.abs(e/t))*100,
                 R2=1-np.sum(e**2)/np.sum((t-t.mean())**2))
 A76={m:summ(tA[maskA76],oA[m][maskA76]) for m in ['Ridge','PSO-KG-CBA','Ensemble']}
-oE={'Ridge':np.load('oofE_Ridge.npz')['oof'],'PSO-KG-CBA':np.load('oofE_PSO-KG-CBA.npz')['oof']}
+oE={'Ridge':np.load(P.oof('oofE_Ridge.npz'))['oof'],'PSO-KG-CBA':np.load(P.oof('oofE_PSO-KG-CBA.npz'))['oof']}
 oE['Ensemble']=(oE['Ridge']+oE['PSO-KG-CBA'])/2
 tE=metaE.y_raw.values
 C76={m:summ(tE,oE[m]) for m in oE}
@@ -62,20 +70,19 @@ for i,(met,ttl) in enumerate([('MAPE','(a) MAPE (%)'),('MdAPE','(b) MdAPE (%)')]
     ax[i].set_xticks(xp,ms); ax[i].set_title(ttl)
 ax[0].legend(frameon=False,fontsize=8)
 fig.suptitle('Effect of energy-mix covariate enrichment (identical 76 countries)',y=1.03,fontsize=10)
-plt.tight_layout(); plt.savefig('figures/F11_enrichment.png'); plt.close()
-json.dump(dict(A76=A76,C76=C76),open('enrichment_effect.json','w'),indent=1,default=float)
+plt.tight_layout(); plt.savefig(FIGL+'/F11_enrichment.png'); plt.close()
+json.dump(dict(A76=A76,C76=C76),open(P.legacy('enrichment_effect.json'),'w'),indent=1,default=float)
 
 # ---- Per-fold split-conformal (proper) for E-PSO-KG-CBA ----
-from train_enriched import TemporalAttention
-dE=np.load('enriched.npz'); XE,yE=dE['X'],dE['y']
-folds_E=pickle.load(open('folds_enriched.pkl','rb'))
+from conformal import TemporalAttention, load_fold_model   # importing train_enriched would train the networks
+dE=np.load(P.data('enriched.npz')); XE,yE=dE['X'],dE['y']
+folds_E=pickle.load(open(P.data('folds_enriched.pkl'),'rb'))
 mc_mean=np.full(len(yE),np.nan); mc_std=np.full(len(yE),np.nan); q_by_fold={}
 T=60
 lo=np.full(len(yE),np.nan); hi=np.full(len(yE),np.nan)
 for fi,(trn,tst) in enumerate(folds_E):
-    m=tf.keras.models.load_model(f'models/E-PSO-KG-CBA_fold{fi}.keras',
-        custom_objects={'TemporalAttention':TemporalAttention},safe_mode=False)
-    s=np.load(f'models/E-PSO-KG-CBA_scaler_fold{fi}.npz')
+    m=load_fold_model(P.oof(f'E-PSO-KG-CBA_fold{fi}.keras'), XE.shape[2])
+    s=np.load(P.oof(f'E-PSO-KG-CBA_scaler_fold{fi}.npz'))
     # reconstruct this fold's inner validation countries (same RNG as training)
     tr_iso=metaE.iloc[trn].iso.unique(); rng=np.random.RandomState(fi)
     val_iso=set(rng.choice(tr_iso,size=max(1,len(tr_iso)//7),replace=False))
@@ -92,8 +99,8 @@ for fi,(trn,tst) in enumerate(folds_E):
     lo[tst],hi[tst]=np.exp(mu_te-q*sd_te),np.exp(mu_te+q*sd_te)
 picp=float(np.mean((tE>=lo)&(tE<=hi))); mpiw=float(np.mean(hi-lo))
 unc=dict(T=T,q_by_fold=q_by_fold,picp=picp,mpiw=mpiw)
-json.dump(unc,open('conformal.json','w'),indent=1)
-np.savez('conformal.npz',mean=mc_mean,std=mc_std,lo=lo,hi=hi)
+json.dump(unc,open(P.legacy('conformal.json'),'w'),indent=1)
+np.savez(P.legacy('conformal.npz'),mean=mc_mean,std=mc_std,lo=lo,hi=hi)
 print('Split-conformal: PICP=%.3f MPIW=%.2f q=%s'%(picp,mpiw,{k:round(v,2) for k,v in q_by_fold.items()}))
 
 # F12 - case studies with conformal bands
@@ -109,10 +116,10 @@ for ax,iso in zip(axs,cases):
 axs[0].set_ylabel('t CO$_2$ person$^{-1}$')
 axs[0].legend(fontsize=6.5,frameon=False)
 fig.suptitle('African case studies: leave-country-out estimation with conformal intervals',y=1.04,fontsize=10)
-plt.tight_layout(); plt.savefig('figures/F12_africa_cases.png'); plt.close()
+plt.tight_layout(); plt.savefig(FIGL+'/F12_africa_cases.png'); plt.close()
 
 # F13 - SHAP aggregation
-an=json.load(open('analysis.json'))
+an=json.load(open(P.legacy('analysis.json')))
 sf=an['shap_by_feature']; sl=an['shap_by_lag']
 nice={'log_epc':'log energy p.c.','log_gpc':'log GDP p.c.','log_population':'log population',
       'coal_share':'coal share','oil_share':'oil share','gas_share':'gas share','low_carbon_share':'low-carbon share'}
@@ -124,7 +131,7 @@ lags=[f't-{i}' for i in range(7,-1,-1)]; lags[-1]='t'
 vals=[sl[k] for k in ['t-7','t-6','t-5','t-4','t-3','t-2','t-1','t-0']]
 ax[1].plot(range(8),vals,marker='o',color=C[3])
 ax[1].set_xticks(range(8),lags); ax[1].set_title('(b) Mean |SHAP| by lag'); ax[1].set_xlabel('Window position')
-plt.tight_layout(); plt.savefig('figures/F13_shap.png'); plt.close()
+plt.tight_layout(); plt.savefig(FIGL+'/F13_shap.png'); plt.close()
 
 # F14 - attention weights
 att=an['attention_mean_by_lag']
@@ -132,7 +139,7 @@ fig,ax=plt.subplots(figsize=(4.6,2.8))
 ax.bar(range(8),att,color=C[4]); ax.axhline(1/8,ls=':',color='gray',lw=1)
 ax.set_xticks(range(8),lags); ax.set(ylabel='Mean attention weight',title='Temporal attention distribution (E-PSO-KG-CBA)')
 ax.text(7.1,1/8+.002,'uniform',fontsize=7,color='gray')
-plt.savefig('figures/F14_attention.png'); plt.close()
+plt.savefig(FIGL+'/F14_attention.png'); plt.close()
 
 # F15 - temporal benchmark (Experiment B)
 tb={1:{'Persist':(0.317,6.43),'Drift':(0.38,7.78),'SVR':(0.324,6.82),'LGBM':(0.459,9.44)},
@@ -145,13 +152,13 @@ for i,m in enumerate(ms):
 ax.set_xticks(range(3),['h = 1','h = 3','h = 5']); ax.set_ylabel('Test MAE (t CO$_2$ person$^{-1}$)')
 ax.set_title('Experiment B: temporal forecasting - naive persistence dominates all horizons (2021-2023)')
 ax.legend(frameon=False)
-plt.savefig('figures/F15_temporal.png'); plt.close()
+plt.savefig(FIGL+'/F15_temporal.png'); plt.close()
 
 # ---- master tables ----
 rows=[]
 for m,v in an['panelA'].items(): rows.append(dict(Experiment='A (112, 6 cov.)',Model=m,**v))
 for m,v in an['panelC'].items(): rows.append(dict(Experiment='C (76, 7 cov.)',Model=m,**v))
-pd.DataFrame(rows).round(3).to_csv('table_master_results.csv',index=False)
-wil=pd.DataFrame(an['wilcoxon']).T.round(4); wil.to_csv('table_wilcoxon.csv')
+pd.DataFrame(rows).round(3).to_csv(P.legacy('table_master_results.csv'),index=False)
+wil=pd.DataFrame(an['wilcoxon']).T.round(4); wil.to_csv(P.legacy('table_wilcoxon.csv'))
 print(wil)
 print('figures:',len(os.listdir('figures')))

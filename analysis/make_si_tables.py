@@ -76,13 +76,16 @@ readme(wb, "S2 Table. Sensitivity analyses and additional results", [
     "All results are leave-country-out results (five folds, countries as groups). RMSE and MAE are in t CO2 per person; MAPE and MdAPE are in %.",
     "Sheet A: missing-data analyses for ridge regression and the five classical learners.",
     "Sheet B: analyses without the seven atypical economies (Qatar, Kuwait, Saudi Arabia, Singapore, Luxembourg, Norway, Iceland).",
-    "Sheet C: paired comparisons with countries as clusters (Algorithm C of S1 Text). Delta is the median of the paired differences in absolute percentage error (first minus second); the interval is the 95% percentile interval of a cluster bootstrap over countries (10,000 draws).",
+    "Sheet C: paired comparisons with countries as clusters (Algorithm C of S1 Text), with the classical learners re-estimated in revision. Delta is the median of the paired differences in absolute percentage error (first minus second); the interval is the 95% percentile interval of a cluster bootstrap over countries (10,000 draws).",
     "Sheet D: absolute percentage error by continent for the exploratory ensemble (original run) and for ridge regression.",
     "Sheet E: covariate importance on held-out error in Experiment C (76 countries): permutation importance (30 repetitions) and drop-one-covariate re-estimation.",
-    "Sheet F: coverage of 90% conformal prediction intervals for ridge regression under three calibration schemes (S1 Text, section F).",
-    "Sheet G: values of the original run and of the re-estimation in revision for the models that were re-estimated. The mean predictor, ridge regression, kNN and SVR are deterministic and reproduce exactly; the three tree ensembles depend on the random state and differ slightly.",
+    "Sheet F: coverage of conformal prediction intervals for ridge regression in Experiment A under three calibration schemes (S1 Text, section F).",
+    "Sheet F2: the same for ridge regression on the countries, covariates and folds of Experiment C, with calibration sets of the size used for the hybrid (8 countries), and the coverage of the stored intervals of the hybrid E-PSO-KG-CBA.",
+    "Sheet G: values of the original run and of the re-estimation in revision for the models that were re-estimated. The mean predictor, ridge regression, kNN and SVR are deterministic and reproduce exactly; the three tree ensembles depend on the random state and differ slightly, and LightGBM was re-estimated with the column subsample (0.85) and L2 penalty (1.5) of Experiment C, which the original run used only in Experiment C.",
     "Sheet H: sensitivity of ridge regression to the penalty lambda.",
-    "Values produced by the scripts rev03_imputation.py, rev04_outliers.py, rev05_expC_xai.py, rev06_conformal.py, rev07_tests.py and rev08_extra.py of the reproducibility archive; the ensemble rows of sheet D are from the original run."])
+    "Sheet I: paired comparisons of every model with ridge regression from the stored out-of-fold estimates of the original run (all thirteen models and the ensemble), in Experiment A on all 112 countries and on the 105 countries without the seven atypical economies, and in Experiment C.",
+    "Sheet J: every model of the original run re-scored from its stored out-of-fold estimates on subsets of countries, with the share of the squared error contributed by the seven atypical economies and by the model's own six worst-fitted countries.",
+    "Values produced by the scripts rev03_imputation.py, rev04_outliers.py, rev05_expC_xai.py, rev06_conformal.py, rev06c_conformal_expC.py, rev07_tests.py, rev08_extra.py, rev_tests_from_oof.py and rev09_stored_without_atypical.py of the reproducibility archive; the ensemble rows of sheet D are from the original run."])
 mfmt = {"RMSE": "0.000", "MAE": "0.000", "MAPE": "0.0", "MdAPE": "0.0", "R2": "0.000"}
 S = pd.read_csv(OUT + "imputation_sensitivity.csv"); S["treatment"] = S.treatment.str.replace(r"^[A-F]\d?\.\s*", "", regex=True)
 S = S.rename(columns={"model": "Model", "treatment": "Analysis", "R2": "R2"})
@@ -122,10 +125,28 @@ for l in ["0.5", "0.6", "0.7", "0.8", "0.9", "0.95"]:
     rows.append({"Nominal level (%)": float(l) * 100, "(a) 13 training countries: mean coverage (%)": 100 * ss["mean"], "(a) 5th percentile over 200 draws (%)": 100 * ss["p5"], "(a) 95th percentile over 200 draws (%)": 100 * ss["p95"],
                  "(b) all training countries: coverage (%)": 100 * r6["cross_conformal"][l], "(c) exchangeable reference: coverage (%)": 100 * r6["exchangeable_reference"][l]})
 Fd = pd.DataFrame(rows)
-ws = write_sheet(wb, "F_conformal", Fd, "F. Coverage of conformal prediction intervals for ridge regression, Experiment A",
+ws = write_sheet(wb, "F_conformal", Fd, "F. Coverage of conformal prediction intervals for ridge regression, Experiment A (calibration on 13 training countries, one-seventh of 89 or 90 rounded to the nearest integer)",
                  [f"At the 90% level: coverage by fold under (b) = {', '.join(f'{100 * v:.1f}%' for v in r6['cross_conformal_fold90'])}; coverage of single folds under (a) ranges from {100 * r6['single_split_fold90']['min']:.0f}% to {100 * r6['single_split_fold90']['max']:.0f}%.",
                   f"Under (b), {100 * r6['cross_conformal_country']['share_full']:.0f}% of the 112 countries have every year inside the 90% interval and {100 * r6['cross_conformal_country']['share_le50']:.0f}% have half of their years or fewer inside it; the mean interval width is {r6['cross_conformal_width90']:.2f} t CO2 per person."],
                  fmt={c_: "0.0" for c_ in Fd.columns})
+r6c = json.load(open(OUT + "rev06c.json")); hs = r6c["hybrid_stored"]; ss = r6c["single_split90"]; cc = r6c["cross_conformal90"]
+F2 = pd.DataFrame([
+    {"Model and calibration set": "Ridge regression, (a) 8 training countries (200 random draws)", "Calibration countries per fold": "8", "Coverage of 90% interval (%)": 100 * ss["mean"],
+     "Lowest fold (%)": 100 * r6c["single_split_fold90"]["min"], "Highest fold (%)": 100 * r6c["single_split_fold90"]["max"], "Mean width (t CO2 per person)": ss["width"],
+     "Countries with every year inside (%)": None, "Countries with half of their years or fewer inside (%)": None},
+    {"Model and calibration set": "Ridge regression, (b) all training countries (grouped cross-conformal)", "Calibration countries per fold": "60 or 61", "Coverage of 90% interval (%)": 100 * cc["coverage"],
+     "Lowest fold (%)": 100 * min(cc["fold"]), "Highest fold (%)": 100 * max(cc["fold"]), "Mean width (t CO2 per person)": cc["width"],
+     "Countries with every year inside (%)": 100 * cc["share_full"], "Countries with half of their years or fewer inside (%)": 100 * cc["share_le50"]},
+    {"Model and calibration set": "Ridge regression, (c) exchangeable reference (200 random halves)", "Calibration countries per fold": "held-out countries", "Coverage of 90% interval (%)": 100 * r6c["exchangeable_reference90"],
+     "Lowest fold (%)": None, "Highest fold (%)": None, "Mean width (t CO2 per person)": None, "Countries with every year inside (%)": None, "Countries with half of their years or fewer inside (%)": None},
+    {"Model and calibration set": "E-PSO-KG-CBA, Monte-Carlo dropout and split-conformal calibration (stored intervals of the original run)", "Calibration countries per fold": "8", "Coverage of 90% interval (%)": 100 * hs["coverage"],
+     "Lowest fold (%)": 100 * min(hs["fold"]), "Highest fold (%)": 100 * max(hs["fold"]), "Mean width (t CO2 per person)": hs["width"],
+     "Countries with every year inside (%)": 100 * hs["share_full"], "Countries with half of their years or fewer inside (%)": 100 * hs["share_le50"]}])
+write_sheet(wb, "F2_conformal_expC", F2, "F2. Coverage of 90% conformal prediction intervals in Experiment C (76 countries, seven covariates, folds of Experiment C)",
+            [f"Under (a), coverage over the 200 draws ranges from {100 * ss['min']:.1f}% to {100 * ss['max']:.1f}%. By fold under (b): {', '.join(f'{100 * v:.1f}%' for v in cc['fold'])}. By fold for E-PSO-KG-CBA: {', '.join(f'{100 * v:.1f}%' for v in hs['fold'])}.",
+             "The calibration sets of (a) have the size of the inner validation sets on which the intervals of the hybrid were calibrated (one-seventh of the training countries, rounded down)."],
+            fmt={c_: "0.0" for c_ in F2.columns if c_ not in ("Model and calibration set", "Calibration countries per fold", "Mean width (t CO2 per person)")} | {"Mean width (t CO2 per person)": "0.00"},
+            widths={"Model and calibration set": 60})
 orig = {"Mean predictor": (7.415, 4.408, 337.8, 63.3, -0.178), "Ridge": (3.056, 1.443, 25.2, 16.3, 0.800), "kNN": (5.119, 2.729, 49.7, 39.0, 0.439), "SVR": (4.881, 2.100, 32.3, 21.3, 0.490),
         "Random forest": (4.233, 1.824, 28.7, 19.1, 0.616), "XGBoost": (4.043, 1.775, 28.0, 18.4, 0.650), "LightGBM": (3.943, 1.813, 28.4, 18.6, 0.667)}
 re_ = O[O.Analysis == "All 112 countries"].set_index("Model")
@@ -142,4 +163,22 @@ write_sheet(wb, "G_reproduction", G, "G. Original run and re-estimation in revis
             fmt={c_: ("0.000" if c_.split(",")[0] in ("RMSE", "MAE", "R2") else "0.0") for c_ in G.columns if c_ != "Model"})
 H = pd.DataFrame([{"lambda": float(k.split("_")[-1]), **v} for k, v in r7.items() if k.startswith("ridge_lambda_")])
 write_sheet(wb, "H_ridge_penalty", H, "H. Ridge regression: sensitivity to the penalty lambda, Experiment A", ["The article uses lambda = 1."], fmt=mfmt)
+tA = pd.read_csv(OUT + "oof_experiment_A_tests_vs_reference.csv"); tA.insert(0, "Experiment", "A, 112 countries")
+tA0 = pd.read_csv(OUT + "oof_experiment_A_tests_vs_reference_without_atypical.csv"); tA0.insert(0, "Experiment", "A, 105 countries without the seven atypical economies")
+tC = pd.read_csv(OUT + "oof_experiment_C_tests_vs_reference.csv"); tC.insert(0, "Experiment", "C, 76 countries")
+It = pd.concat([tA, tA0, tC]).rename(columns={"first": "First model", "second": "Second model", "MdAPE first": "MdAPE first (%)", "MdAPE second": "MdAPE second (%)", "delta (points)": "Delta (points)",
+                                              "CI lower": "95% CI lower", "CI upper": "95% CI upper", "p cluster bootstrap": "p, cluster bootstrap", "p per-country": "p, per-country test", "p observation level": "p, observation-level test"})
+It["First model"] = It["First model"].replace({"RF": "Random forest", "Mean": "Mean predictor"})
+write_sheet(wb, "I_tests_stored", It, "I. Every model against ridge regression, from the stored out-of-fold estimates of the original run",
+            ["A positive delta means that the model has the larger error than ridge regression. A cluster-bootstrap p of 0 means that none of the 10,000 draws had the opposite sign (p < 0.0001).",
+             "Computed by rev_tests_from_oof.py (all countries) and rev09_stored_without_atypical.py (105 countries) from out/oof_experiment_A.csv and out/oof_experiment_C.csv, which oof_from_original.py writes from original_pipeline/results/."],
+            fmt={"MdAPE first (%)": "0.00", "MdAPE second (%)": "0.00", "Delta (points)": "+0.00;-0.00;0.00", "95% CI lower": "+0.00;-0.00;0.00", "95% CI upper": "+0.00;-0.00;0.00", "p, cluster bootstrap": "0.0000", "p, per-country test": "0.0E+00", "p, observation-level test": "0.0E+00"},
+            widths={"Experiment": 44, "First model": 20, "Second model": 14})
+jA = pd.read_csv(OUT + "oof_experiment_A_rescored.csv"); jA.insert(0, "Experiment", "A")
+jC = pd.read_csv(OUT + "oof_experiment_C_rescored.csv"); jC.insert(0, "Experiment", "C")
+J = pd.concat([jA, jC]).rename(columns={"model": "Model", "subset": "Countries scored", "countries": "N"})
+J["Model"] = J["Model"].replace({"RF": "Random forest", "Mean": "Mean predictor"})
+write_sheet(wb, "J_rescored_stored", J, "J. Every model re-scored from the stored out-of-fold estimates on subsets of countries",
+            ["The estimates are those of the original run; only the set of countries that is scored changes. A long filled run is a run of more than three consecutive filled years."],
+            fmt=mfmt | {c_: "0.0" for c_ in J.columns if c_.startswith("share")}, widths={"Countries scored": 50, "Model": 18})
 wb.save(DEST + "S2_Table.xlsx"); print("S2 Table sheets", wb.sheetnames)

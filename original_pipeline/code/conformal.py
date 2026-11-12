@@ -24,9 +24,10 @@ Coverage (PICP) is the share of held-out observations inside their interval; MPI
 t CO2 per person.
 
 Usage (from the original_pipeline folder or anywhere else):
-    python code/conformal.py              # writes results/conformal_rerun.json and .npz
+    python code/conformal.py              # writes results/conformal_regen.json and .npz (read by rebuild_figures.py)
+                                          # or, if the stored ones exist, results/conformal_rerun.* next to them
     python code/conformal.py --seed 7     # another Monte-Carlo seed (fold k uses seed + k)
-    python code/conformal.py --overwrite  # writes results/conformal_regen.json and .npz instead
+    python code/conformal.py --overwrite  # always writes results/conformal_regen.json and .npz
 
 VERIFICATION (November 2026; Python 3.13, TensorFlow 2.21, Keras 3.15):
   - The rebuilt fold networks reproduce the stored deterministic estimates of E-PSO-KG-CBA exactly
@@ -39,6 +40,12 @@ VERIFICATION (November 2026; Python 3.13, TensorFlow 2.21, Keras 3.15):
     stored value (fold 1, the largest: 66.6 to 75.6, stored 69.2). The stored results are therefore
     consistent with this method, and differences of about one percentage point in coverage are Monte
     Carlo variation.
+  - An earlier implementation of the same method survives in figures_part2.py (legacy). It differs in two
+    details: the calibration factor is np.quantile(scores, ceil(0.9 (n + 1)) / n) with linear interpolation
+    instead of the order statistic of step 4, and 1e-6 is added to sigma. The difference is a fraction of
+    one order statistic. In 13 runs of that variant with different seeds and orders of evaluation, coverage
+    ranged from 81.3% to 82.7% and mean width from 5.41 to 5.68; it does not reproduce the stored calibration
+    factors exactly either. This script keeps the order statistic, which is the definition given in S1 Text.
   - Every run prints a comparison with the stored results/conformal_regen.json and .npz.
 """
 import os, sys, json, zipfile, pickle, random, argparse
@@ -48,11 +55,10 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from tensorflow.keras import layers as L, Model
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths as P
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA = os.path.join(BASE, "data")
-RES = os.path.join(BASE, "results")
-OOF = os.path.join(RES, "oof_parts")
+DATA, RES, OOF = P.DATA, P.RESULTS, P.OOF
 TAG = "E-PSO-KG-CBA"
 T = 60                    # Monte-Carlo dropout passes
 LEVEL = 0.90              # nominal coverage
@@ -137,14 +143,15 @@ def main():
         print(f"fold {fi}: {len(set(val_iso))} calibration countries ({n} samples), q = {q:.2f}", flush=True)
     res = dict(T=T, seed=a.seed, q_by_fold=q_by_fold, picp=float(((t >= lo) & (t <= hi)).mean()), mpiw=float((hi - lo).mean()),
                picp_raw=float(((t >= lo_raw) & (t <= hi_raw)).mean()), mpiw_raw=float((hi_raw - lo_raw).mean()))
-    name = "conformal_regen" if a.overwrite else "conformal_rerun"
+    ref_json, ref_npz = os.path.join(RES, "conformal_regen.json"), os.path.join(RES, "conformal_regen.npz")
+    compare = os.path.exists(ref_json) and not a.overwrite      # keep the stored intervals and compare with them
+    name = "conformal_rerun" if compare else "conformal_regen"
     json.dump(res, open(os.path.join(RES, f"{name}.json"), "w"), indent=1)
     np.savez(os.path.join(RES, f"{name}.npz"), lo=lo, hi=hi)
     print(json.dumps(res, indent=1))
     print("\nVERIFICATION")
     print(f"  rebuilt fold networks vs stored deterministic estimates: max |difference| = {max(check):.2e}")
-    ref_json, ref_npz = os.path.join(RES, "conformal_regen.json"), os.path.join(RES, "conformal_regen.npz")
-    if not a.overwrite and os.path.exists(ref_json):
+    if compare:
         ref = json.load(open(ref_json)); rn = np.load(ref_npz, allow_pickle=False)
         for k in ("picp", "mpiw", "picp_raw", "mpiw_raw"):
             print(f"  {k:9s} this run {res[k]:.4f}   stored {ref[k]:.4f}")

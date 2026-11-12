@@ -35,13 +35,13 @@ from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
+import paths as P
 
 SEED = 42
 W = 8
 HORIZONS = [1, 3, 5]
-DATA = os.environ.get("PANEL", "data/panel_clean.csv")
-OUT = "results"
-os.makedirs(OUT, exist_ok=True)
+DATA = os.environ.get("PANEL", P.data("panel_clean.csv"))
+OUT = P.RESULTS
 
 FEATS = ["log_epc", "log_gpc", "log_population", "coal_share", "oil_share", "gas_share", "y"]
 
@@ -166,7 +166,7 @@ def main(only=None):
     res = {}
     for key, (lab, tend, tys) in WINDOWS.items():
         part = f"{OUT}/_expB_{lab}.json"
-        if only and key != only and os.path.exists(part):
+        if key != only and os.path.exists(part):      # reuse a window already on disk (resumable)
             res[key] = json.load(open(part)); continue
         if only and key != only:
             continue

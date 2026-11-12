@@ -1,7 +1,7 @@
 """
 Experiment C — enriched 76-country panel (adds low-carbon share of primary energy).
 Regenerates out-of-fold predictions for Ridge, LightGBM and the enriched hybrid
-E-PSO-KG-CBA, resumable per fold. Writes oof_parts/oofE_<MODEL>.npz.
+E-PSO-KG-CBA, resumable per fold. Writes results/oof_parts/oofE_<MODEL>.npz.
 """
 import os, sys, json, time, pickle
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -13,14 +13,14 @@ from tensorflow.keras import layers as L, Model, callbacks, optimizers
 from sklearn.linear_model import Ridge
 from lightgbm import LGBMRegressor
 from deep_loco import TemporalAttention, set_seed
+import paths as P
 
 PSO_BEST = dict(filters=37, kernel=4, units=40, dropout=0.231, lr=9.96e-4, batch=48)
-OUT = 'oof_parts'
-os.makedirs(OUT, exist_ok=True)
+OUT = P.OOF
 
-d = np.load('enriched.npz'); XE, yE = d['X'], d['y']
-metaE = pd.read_csv('meta_enriched.csv')
-foldsE = pickle.load(open('folds_enriched.pkl', 'rb'))
+d = np.load(P.data('enriched.npz')); XE, yE = d['X'], d['y']
+metaE = pd.read_csv(P.data('meta_enriched.csv'))
+foldsE = pickle.load(open(P.data('folds_enriched.pkl'), 'rb'))
 NF = XE.shape[2]
 
 

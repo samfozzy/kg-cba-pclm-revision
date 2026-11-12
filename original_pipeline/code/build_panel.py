@@ -15,14 +15,19 @@ data/imputation_flags.csv     per country-year, which values were filled
 data/enriched.npz             (X, y) arrays for Experiment C
 data/meta_enriched.csv        iso/year/y_raw for Experiment C
 data/folds_enriched.pkl       grouped 5-fold split for Experiment C
+results/table_imputation_audit.csv  filled country-years by series (added in revision; reproduces the stored table)
+results/table_imputation_runs.csv   longest run of consecutive filled years in any one series, by country
+                                    (added in revision; the values reproduce the stored table exactly)
 """
 import os, pickle
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import GroupKFold
 
-RAW = 'data/raw'
-OUT = 'data'
+import paths as P
+
+RAW = P.RAW
+OUT = P.DATA
 Y0, Y1 = 1990, 2023
 W = 8
 CORE = ['co2_per_capita', 'energy_per_capita', 'gdp_per_capita', 'population',
@@ -78,6 +83,7 @@ def build_enriched(d):
     cov = d.groupby('iso_code').low_carbon_share_energy.apply(lambda s: s.notna().mean())
     sub = set(cov[cov >= 0.90].index)
     e = d[d.iso_code.isin(sub)].copy()
+    lc_filled = int(e.low_carbon_share_energy.isna().sum()); lc_n = len(e)
     e['low_carbon_share_energy'] = e.groupby('iso_code').low_carbon_share_energy.transform(fill_series) / 100.0  # OWID reports percent; panel uses a fraction
     e['log_epc'] = np.log10(e.energy_per_capita.clip(lower=1))
     e['log_gpc'] = np.log10(e.gdp_per_capita.clip(lower=100))
@@ -98,7 +104,38 @@ def build_enriched(d):
     folds = list(GroupKFold(n_splits=5).split(X, y, meta.iso.values))
     pickle.dump(folds, open(f'{OUT}/folds_enriched.pkl', 'wb'))
     print(f'enriched: {meta.iso.nunique()} countries, {len(y)} samples, X{X.shape}')
+    return lc_filled, lc_n
+
+
+def longest_run(flag):
+    best = cur = 0
+    for v in flag:
+        cur = cur + 1 if v else 0
+        best = max(best, cur)
+    return best
+
+
+def imputation_tables(lc_filled, lc_n):
+    """Audit of the filled values (Table 3 and the missing-data sensitivity analysis).
+
+    Written by an ad hoc step in the original run; added here in revision. The longest run ignores GDP per capita
+    in 2023, which is extended from 2022 for every country because the Maddison Project Database ends in 2022.
+    The runs table is sorted by run length and then country code (the stored table has another order among ties).
+    """
+    f = pd.read_csv(f'{OUT}/imputation_flags.csv').sort_values(['iso_code', 'year'])
+    rows = [dict(variable=c, imputed_country_years=int(f[c + '_imputed'].sum()),
+                 pct=round(100 * f[c + '_imputed'].mean(), 2)) for c in CORE]
+    rows.append(dict(variable='low_carbon_share_energy (76-country sub-panel)', imputed_country_years=lc_filled,
+                     pct=round(100 * lc_filled / lc_n, 2)))
+    os.makedirs(P.RESULTS, exist_ok=True)
+    pd.DataFrame(rows).to_csv(P.results('table_imputation_audit.csv'), index=False)
+    g = f.copy()
+    g.loc[g.year == Y1, 'gdp_per_capita_imputed'] = False
+    runs = pd.concat({c: g.groupby('iso_code')[c + '_imputed'].apply(longest_run) for c in CORE}, axis=1).max(axis=1)
+    runs = runs.rename('longest_run').rename_axis('iso').reset_index().sort_values(['longest_run', 'iso'], ascending=[False, True])
+    runs.to_csv(P.results('table_imputation_runs.csv'), index=False)
+    print(f'imputation audit: {int((runs.longest_run > 3).sum())} countries with a filled run longer than 3 years')
 
 
 if __name__ == '__main__':
-    build_enriched(build())
+    imputation_tables(*build_enriched(build()))

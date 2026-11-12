@@ -2,11 +2,11 @@
 Regenerate out-of-fold predictions for every deep model in Experiment A (and the
 enriched Experiment C hybrid), one fold at a time, resumable across invocations.
 
-Usage:  python3 run_deep.py <MODEL> [max_seconds]
+Usage:  python code/run_deep.py <MODEL> [max_seconds]
         MODEL in {LSTM, GRU, CNN-LSTM, CNN-BiLSTM-Attn, KG-CBA, PSO-KG-CBA}
 
-Per-fold predictions land in oof_parts/<MODEL>_fold<k>.npz; once all five folds exist
-the assembled vector is written to oof_parts/oof_<MODEL>.npz. Re-running skips folds
+Per-fold predictions land in results/oof_parts/<MODEL>_fold<k>.npz; once all five folds exist
+the assembled vector is written to results/oof_parts/oof_<MODEL>.npz. Re-running skips folds
 already on disk, so long jobs can be resumed.
 
 The PSO-converged configuration is the one reported in Table B1.
@@ -20,11 +20,11 @@ from tensorflow.keras import layers as L, Model, callbacks, optimizers
 from sklearn.linear_model import Ridge
 
 from deep_loco import meta, X, y, folds, FEATS, TemporalAttention, set_seed, build_model
+import paths as P
 
 PSO_BEST = dict(filters=37, kernel=4, units=40, dropout=0.231, lr=9.96e-4, batch=48)
 FIXED = dict(filters=48, kernel=3, units=48, dropout=0.25, lr=1e-3, batch=96)
-OUT = 'oof_parts'
-os.makedirs(OUT, exist_ok=True)
+OUT = P.OOF
 
 
 def build_kg(hp, RW, RB):

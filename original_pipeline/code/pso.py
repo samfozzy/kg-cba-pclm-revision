@@ -1,12 +1,29 @@
+"""
+Particle swarm search for the hyperparameters of the Kaya-guided hybrid (PSO-KG-CBA). Step 4 of REPRODUCE.md.
+
+Six particles x five iterations over six dimensions (filters, kernel, LSTM units, dropout, log10 learning rate,
+batch-size index into BATCHES). Fitness is the lowest inner-validation MSE (log target) of one training run on
+the first leave-country-out fold of Experiment A, with one-seventh of its training countries held out
+(numpy RandomState(0)). The swarm is initialised with RandomState(42), velocities are updated with
+RandomState(1000 + iteration), and every fitness evaluation builds its network after set_seed(123).
+
+The state, including the log of every evaluation, is saved to results/pso_state.json after each evaluation,
+so the search can be interrupted and resumed: each invocation stops after TIME_BUDGET seconds (default 190,
+or the environment variable PSO_TIME_BUDGET), and the script is run again until it prints 'PSO COMPLETE'.
+run_deep.py and regen_enriched.py use the configuration the search returned in the original run, written
+out as PSO_BEST.
+"""
 import os, json, time, sys
 os.environ['TF_CPP_MIN_LOG_LEVEL']='3'
+os.environ.setdefault('TF_ENABLE_ONEDNN_OPTS', '0')
 import numpy as np, tensorflow as tf
 from tensorflow.keras import layers as L, Model, callbacks, optimizers, regularizers
 from sklearn.linear_model import Ridge
 from deep_loco import meta, X, y, folds, FEATS, TemporalAttention, set_seed
+import paths as P
 
-STATE='pso_state.json'
-TIME_BUDGET=190  # seconds per invocation
+STATE=P.PSO_STATE
+TIME_BUDGET=float(os.environ.get('PSO_TIME_BUDGET', 190))  # seconds per invocation
 N_PART, N_ITER = 6, 5
 # dims: filters, kernel, units, dropout, log10(lr), batch
 LO = np.array([16, 2, 16, 0.05, np.log10(2e-4), 0])

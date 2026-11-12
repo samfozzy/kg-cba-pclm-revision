@@ -12,12 +12,12 @@ import numpy as np
 import pandas as pd
 import matplotlib; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import paths as P
 
 plt.rcParams.update({'font.size': 9, 'axes.spines.top': False, 'axes.spines.right': False,
                      'figure.dpi': 110, 'savefig.dpi': 300, 'savefig.bbox': 'tight'})
 C = ['#0173B2', '#DE8F05', '#029E73', '#D55E00', '#CC78BC', '#CA9161', '#949494', '#56B4E9']
-FIG = 'figures'
-os.makedirs(FIG, exist_ok=True)
+FIG = P.FIGURES
 
 
 def save(name):
@@ -26,20 +26,20 @@ def save(name):
 
 
 # ---------------- data ----------------
-metaA = pd.read_csv('results/loco_meta.csv')
+metaA = pd.read_csv(P.results('loco_meta.csv'))
 tA = metaA.y_raw.values
-cz = np.load('results/oof_classical.npz')
+cz = np.load(P.results('oof_classical.npz'))
 oA = {k: cz[k] for k in cz.files}
 for k in ['LSTM', 'GRU', 'CNN-LSTM', 'CNN-BiLSTM-Attn', 'KG-CBA', 'PSO-KG-CBA']:
-    oA[k] = np.load(f'oof_parts/oof_{k}.npz')['oof']
+    oA[k] = np.load(P.oof(f'oof_{k}.npz'))['oof']
 oA['Ensemble'] = (oA['Ridge'] + oA['GRU'] + oA['PSO-KG-CBA']) / 3
 
-metaE = pd.read_csv('meta_enriched.csv')
+metaE = pd.read_csv(P.data('meta_enriched.csv'))
 tE = metaE.y_raw.values
-oE = {k: np.load(f'oof_parts/oofE_{k}.npz')['oof'] for k in ['Ridge', 'LightGBM', 'PSO-KG-CBA']}
+oE = {k: np.load(P.oof(f'oofE_{k}.npz'))['oof'] for k in ['Ridge', 'LightGBM', 'PSO-KG-CBA']}
 oE['Ensemble'] = (oE['Ridge'] + oE['PSO-KG-CBA']) / 2
 
-an = json.load(open('results/analysis_regen.json'))
+an = json.load(open(P.results('analysis_regen.json')))
 
 
 def summ(t, lp):
@@ -51,7 +51,7 @@ def summ(t, lp):
 # ---------------- F07 training dynamics (supplementary) ----------------
 fig, axs = plt.subplots(1, 4, figsize=(11, 2.7), sharey=True)
 for ax, k in zip(axs, ['LSTM', 'GRU', 'CNN-LSTM', 'CNN-BiLSTM-Attn']):
-    d = np.load(f'oof_parts/{k}_fold0.npz')
+    d = np.load(P.oof(f'{k}_fold0.npz'))
     ax.plot(d['loss'], color=C[0], lw=1.4, label='train')
     ax.plot(d['val_loss'], color=C[3], lw=1.4, label='inner val')
     ax.set(title=k, xlabel='Epoch', yscale='log')
@@ -119,12 +119,12 @@ for i, (met, ttl) in enumerate([('MAPE', '(a) MAPE (%)'), ('MdAPE', '(b) MdAPE (
 ax[0].legend(frameon=False, fontsize=8)
 plt.suptitle('Identical 76 countries, with and without the low-carbon energy share', fontsize=9.5)
 plt.tight_layout(); save('F11_enrichment.png')
-json.dump(dict(A76=A76, C76=C76), open('results/enrichment_effect_regen.json', 'w'), indent=1)
+json.dump(dict(A76=A76, C76=C76), open(P.results('enrichment_effect_regen.json'), 'w'), indent=1)
 
 # ---------------- F12 African case studies ----------------
-cf = np.load('results/conformal_regen.npz')
+cf = np.load(P.results('conformal_regen.npz'))
 cases = [c for c in ['ZAF', 'EGY', 'NGA', 'GHA'] if c in iso76]
-runs = pd.read_csv('results/table_imputation_runs.csv').set_index('iso').longest_run
+runs = pd.read_csv(P.results('table_imputation_runs.csv')).set_index('iso').longest_run
 fig, axs = plt.subplots(1, len(cases), figsize=(2.9 * len(cases), 2.9), sharex=True)
 for ax, iso in zip(np.atleast_1d(axs), cases):
     m = (metaE.iso == iso).values
@@ -145,8 +145,8 @@ FE = ['log_epc', 'log_gpc', 'log_population', 'coal_share', 'oil_share', 'gas_sh
 try:
     import shap
     from lightgbm import LGBMRegressor
-    d = np.load('enriched.npz'); XE = d['X']; yE = d['y']
-    foldsE = pickle.load(open('folds_enriched.pkl', 'rb'))
+    d = np.load(P.data('enriched.npz')); XE = d['X']; yE = d['y']
+    foldsE = pickle.load(open(P.data('folds_enriched.pkl'), 'rb'))
     trn, tst = foldsE[0]
     mu, sd = XE[trn].mean((0, 1)), XE[trn].std((0, 1)) + 1e-8
     F = ((XE - mu) / sd).reshape(len(XE), -1)
@@ -157,7 +157,7 @@ try:
     by_f = {FE[i]: float(np.abs(sv[:, :, i]).mean()) for i in range(7)}
     by_l = {f't-{7-j}': float(np.abs(sv[:, j, :]).mean()) for j in range(8)}
     json.dump(dict(shap_by_feature=by_f, shap_by_lag=by_l),
-              open('results/shap_regen.json', 'w'), indent=1)
+              open(P.results('shap_regen.json'), 'w'), indent=1)
     fig, ax = plt.subplots(1, 2, figsize=(9.4, 3.0))
     k = sorted(by_f, key=by_f.get)
     ax[0].barh(k, [by_f[i] for i in k], color=C[0])
@@ -173,21 +173,19 @@ except Exception as ex:
 
 try:
     import tensorflow as tf
-    from deep_loco import TemporalAttention
-    d = np.load('enriched.npz'); XE = d['X']
-    foldsE = pickle.load(open('folds_enriched.pkl', 'rb'))
+    from conformal import TemporalAttention, load_fold_model
+    d = np.load(P.data('enriched.npz')); XE = d['X']
+    foldsE = pickle.load(open(P.data('folds_enriched.pkl'), 'rb'))
     atts = []
     for fi, (trn, tst) in enumerate(foldsE):
-        m = tf.keras.models.load_model(f'oof_parts/E-PSO-KG-CBA_fold{fi}.keras',
-                                       custom_objects={'TemporalAttention': TemporalAttention},
-                                       safe_mode=False)
-        s = np.load(f'oof_parts/E-PSO-KG-CBA_scaler_fold{fi}.npz')
+        m = load_fold_model(P.oof(f'E-PSO-KG-CBA_fold{fi}.keras'), XE.shape[2])
+        s = np.load(P.oof(f'E-PSO-KG-CBA_scaler_fold{fi}.npz'))
         sub = Model = None
         lay = [l for l in m.layers if isinstance(l, TemporalAttention)][0]
         ex = tf.keras.Model(m.input, lay.output[1])
         atts.append(ex.predict((XE[tst] - s['mu']) / s['sd'], verbose=0).reshape(len(tst), 8))
     att = np.concatenate(atts).mean(0)
-    json.dump(att.tolist(), open('results/attention_regen.json', 'w'))
+    json.dump(att.tolist(), open(P.results('attention_regen.json'), 'w'))
     fig, ax = plt.subplots(figsize=(4.6, 2.8))
     ax.bar(range(8), att, color=C[4]); ax.axhline(1 / 8, ls=':', color='gray', lw=1)
     ax.set_xticks(range(8)); ax.set_xticklabels([f't-{7-j}' for j in range(8)])
@@ -199,7 +197,7 @@ except Exception as ex:
     print('attention skipped:', ex)
 
 # ---------------- F15 Experiment B (rebuilt from real results) ----------------
-tb = pd.read_csv('results/table_experiment_b.csv')
+tb = pd.read_csv(P.results('table_experiment_b.csv'))
 sel = ['Persistence', 'Drift', 'Ridge (growth)', 'RF (growth)', 'XGBoost (level)',
        'LightGBM (growth)']
 fig, axs = plt.subplots(1, 2, figsize=(10.4, 3.4), sharey=True)

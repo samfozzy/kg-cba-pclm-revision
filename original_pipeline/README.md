@@ -1,9 +1,8 @@
 # Original analysis pipeline
 
 This folder is the complete analysis pipeline of the study as archived in
-`samfozzy/kg-cba-loco-co2-reproducibility` (commit `67b355c`, 12 August 2026), copied without changes
-except that this README replaces the archive's own and that `code/conformal.py`, which was missing from
-the archive, was reconstructed in revision (see below). It contains the code of every model, including the
+`samfozzy/kg-cba-loco-co2-reproducibility` (commit `67b355c`, 12 August 2026), copied from the archive
+and revised in November 2026 (see "Revisions to the archive" below); the methods and the stored estimates are unchanged. It contains the code of every model, including the
 deep networks and the Kaya-guided hybrids, and their stored out-of-fold estimates. The run order, the
 software versions and the expected values are in [`REPRODUCE.md`](REPRODUCE.md).
 
@@ -29,6 +28,9 @@ software versions and the expected values are in [`REPRODUCE.md`](REPRODUCE.md).
 | `results/oof_parts/E-PSO-KG-CBA_fold<k>.keras`, `..._scaler_fold<k>.npz` | Trained hybrid networks of Experiment C and their standardization constants |
 | `results/loco_meta.csv` | Country, year and observed value of each row of the Experiment A estimates |
 | `results/conformal_regen.*` | Monte-Carlo dropout and split-conformal intervals of the original run (E-PSO-KG-CBA, Experiment C) |
+| `results/pso_state.json`, `results/pso_rerun_check.csv` | Log of the particle swarm search (regenerated) and its comparison with Figure S4 |
+| `results/table_imputation_audit.csv`, `results/table_imputation_runs.csv` | Every filled country-year and the length of each filled run |
+| `results/legacy/` | Outputs of the legacy scripts (not part of the run order) |
 | `results/conformal_rerun.*` | The same intervals from the reconstructed `code/conformal.py` (seed 42) |
 | `results/*.json`, `results/*.csv` | Values behind the tables and figures of the original submission |
 
@@ -42,21 +44,30 @@ uses them for the country-clustered tests of every model against ridge regressio
 (`../analysis/out/oof_experiment_*_tests_vs_reference.csv`) and for re-scoring every model on subsets of
 countries (`../analysis/out/oof_experiment_*_rescored.csv`).
 
-## Known gaps in this archive
+## Revisions to the archive
 
-- `code/conformal.py`, step 8 of `REPRODUCE.md`, was not in the archive; only its outputs were
-  (`results/conformal_regen.*`, the intervals of the hybrid of Experiment C: E-PSO-KG-CBA, 76 countries,
-  2,052 rows). It was reconstructed in revision from the method in the manuscript and the stored fold
-  networks. The rebuilt networks reproduce the stored estimates exactly. Monte-Carlo dropout is random
-  and the seeding of the original run is unknown, so the intervals cannot be reproduced bit for bit: in
-  27 runs with different seeds, coverage ranged from 81.0% to 83.0% (stored 81.9%) and mean width from
-  5.40 to 6.04 t CO₂ per person (stored 5.68). The script docstring gives the details. It loads only the
-  weights of the stored networks, so it does not depend on the Python version that saved them.
-- `pso_state.json`, the log of the particle swarm search read by `code/pso.py` and `code/figures_part1.py`,
-  is not in the archive.
-- The scripts do not share one working-directory convention. `build_panel.py`, `loco_classical.py` and
-  `experiment_b.py` read `data/` and write `results/` relative to this folder. `run_deep.py`,
-  `regen_enriched.py` and `clustered_stats.py` read and write `oof_parts/` without the `results/` prefix,
-  and several scripts read `enriched.npz`, `meta_enriched.csv`, `folds_enriched.pkl` or `panel_clean.csv`
-  from the current directory. The run order in `REPRODUCE.md` therefore needs these paths adjusted before
-  it runs end to end.
+- `code/paths.py` defines the folder layout once. Every script now reads and writes `data/`, `results/`,
+  `results/oof_parts/` and `figures/` through it, so the run order in `REPRODUCE.md` works from any working
+  directory. Current-run scripts write to the folders listed above; scripts that produced earlier variants
+  of the analysis are marked "LEGACY" in their docstrings and write to `results/legacy/`.
+- `code/conformal.py` was not in the archive and was reconstructed (step 8 of `REPRODUCE.md`). Only its
+  outputs were archived (`results/conformal_regen.*`: the 90% intervals of the hybrid E-PSO-KG-CBA in
+  Experiment C, 76 countries, 2,052 rows). The rebuilt script loads only the weights of the stored fold
+  networks, which reproduce the stored estimates exactly. Monte-Carlo dropout is random and the seeding of the
+  original run is unknown, so the intervals cannot be reproduced bit for bit: in 27 runs with different
+  seeds, coverage ranged from 81.0% to 83.0% (stored 81.9%) and mean width from 5.40 to 6.04 t CO2 per person
+  (stored 5.68).
+- `results/pso_state.json`, the log of the particle swarm search, was missing from the archive. It was
+  regenerated by `code/pso.py`. The search reproduces the published configuration as its global best, and
+  its fitness path matches the values digitised from the original Figure S4 (`results/pso_rerun_check.csv`).
+- `results/table_imputation_audit.csv` and `results/table_imputation_runs.csv` had no writing script. They
+  are now written by `build_panel.py` and match the archived files (same rows and values).
+- `figures_part1.py` no longer uses the Matplotlib argument removed in version 3.11 for box plots.
+- A clean-copy run of the whole pipeline, and what it reproduces and does not, is described in
+  `REPRODUCE.md`.
+
+## Analysis of the revision
+
+`../analysis/` contains the analyses added in revision: country-clustered tests, re-scoring on subsets of
+countries, the atypical-economy exclusion (`rev09_stored_without_atypical.py`), and like-for-like conformal
+coverage of ridge regression in Experiment C (`rev06c_conformal_expC.py`, output `analysis/out/rev06c.json`).
