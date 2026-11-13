@@ -70,3 +70,9 @@ This writes the country-clustered tests of every model against ridge regression 
 ## Contact
 
 Samiuel C. Atuahene, Emerging Engineering Technologies Division, CSIR – Institute of Industrial Research, East Legon, Accra, Ghana.
+
+## Licence
+
+- Code (`original_pipeline/`, `analysis/`): MIT licence, see [`LICENSE`](LICENSE).
+- Manuscript, response to reviewers, cover letter, Supporting Information and figures: Creative Commons Attribution 4.0 International (CC BY 4.0), see [`LICENSE-DOCS.md`](LICENSE-DOCS.md).
+- Source data in `data/`: Our World in Data files under their own licence.
